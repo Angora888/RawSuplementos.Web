@@ -1,0 +1,668 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.home-page {
+  min-height: 100vh;
+  background: #0b0b0b;
+  color: #fff;
+}
+
+/* =========================
+   NAVBAR
+========================= */
+
+.home-navbar {
+  position: sticky;
+  top: 0;
+
+  z-index: 100;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 30px;
+
+  height: 82px;
+
+  padding: 0 6%;
+
+  border-bottom: 1px solid #222;
+
+  background:
+    rgba(10, 10, 10, 0.95);
+
+  backdrop-filter: blur(12px);
+}
+
+.home-brand {
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+
+  cursor: pointer;
+}
+
+.home-brand-logo {
+  color: #e10600;
+
+  font-size: 28px;
+  font-weight: 1000;
+
+  font-style: italic;
+}
+
+.home-brand > div:last-child {
+  display: flex;
+  flex-direction: column;
+}
+
+.home-brand strong {
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.home-brand span {
+  color: #888;
+
+  font-size: 9px;
+  font-weight: 700;
+
+  letter-spacing: 3px;
+}
+
+.home-nav-links {
+  display: flex;
+
+  gap: 32px;
+}
+
+.home-nav-links button {
+  border: 0;
+
+  background: transparent;
+  color: #bbb;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.home-nav-links button:hover {
+  color: #e10600;
+}
+
+.home-login-button {
+  padding: 11px 18px;
+
+  border: 1px solid #e10600;
+  border-radius: 9px;
+
+  background: transparent;
+  color: #e10600;
+
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.home-login-button:hover {
+  background: #e10600;
+  color: #fff;
+}
+
+/* =========================
+   HERO
+========================= */
+
+.home-hero {
+  min-height: 600px;
+
+  display: grid;
+
+  grid-template-columns:
+    1.05fr 0.95fr;
+
+  align-items: center;
+
+  padding: 70px 7%;
+
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at 70% 50%,
+      #242424,
+      #0b0b0b 50%
+    );
+}
+
+.home-hero-content {
+  max-width: 700px;
+}
+
+.home-eyebrow {
+  margin: 0 0 12px;
+
+  color: #e10600;
+
+  font-size: 11px;
+  font-weight: 900;
+
+  letter-spacing: 2px;
+}
+
+.home-hero h1 {
+  margin: 0;
+
+  font-size:
+    clamp(48px, 6vw, 82px);
+
+  font-weight: 1000;
+
+  line-height: 0.95;
+
+  letter-spacing: -3px;
+}
+
+.home-hero h1 span {
+  color: #e10600;
+}
+
+.home-hero-description {
+  max-width: 590px;
+
+  margin: 25px 0;
+
+  color: #b7b7b7;
+
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.home-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 12px;
+
+  margin-bottom: 38px;
+}
+
+.home-primary-button,
+.home-secondary-button {
+  padding: 14px 22px;
+
+  border-radius: 9px;
+
+  font-size: 15px;
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+.home-primary-button {
+  border: 1px solid #e10600;
+
+  background: #e10600;
+  color: #fff;
+}
+
+.home-primary-button:hover {
+  background: #ff241c;
+}
+
+.home-secondary-button {
+  border: 1px solid #444;
+
+  background: transparent;
+  color: #fff;
+}
+
+.home-secondary-button:hover {
+  border-color: #777;
+}
+
+.home-hero-features {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 30px;
+}
+
+.home-hero-features div {
+  display: flex;
+  flex-direction: column;
+}
+
+.home-hero-features strong {
+  font-size: 13px;
+}
+
+.home-hero-features span {
+  margin-top: 3px;
+
+  color: #777;
+
+  font-size: 11px;
+}
+
+/* =========================
+   HERO VISUAL
+========================= */
+
+.home-hero-visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-product-circle {
+  width: min(460px, 90%);
+  aspect-ratio: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(225, 6, 0, 0.20),
+      rgba(225, 6, 0, 0.04) 55%,
+      transparent 70%
+    );
+}
+
+.hero-product-bottle {
+  width: 250px;
+  height: 330px;
+
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+  align-items: center;
+
+  border-radius: 34px 34px 28px 28px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #252525,
+      #080808
+    );
+
+  border: 1px solid #3b3b3b;
+
+  box-shadow:
+    0 40px 60px
+    rgba(0, 0, 0, 0.5);
+}
+
+.hero-product-bottle span {
+  color: #e10600;
+
+  font-size: 48px;
+  font-weight: 1000;
+
+  font-style: italic;
+}
+
+.hero-product-bottle strong {
+  margin-top: 35px;
+
+  font-size: 22px;
+}
+
+.hero-product-bottle small {
+  margin-top: 4px;
+
+  color: #777;
+
+  letter-spacing: 3px;
+}
+
+/* =========================
+   CATÁLOGO
+========================= */
+
+.home-catalog {
+  padding: 75px 6%;
+
+  background: #151515;
+}
+
+.home-section-header {
+  margin-bottom: 30px;
+}
+
+.home-section-header h2 {
+  margin: 0;
+
+  font-size: 34px;
+  font-weight: 950;
+}
+
+.home-section-header > div > p:last-child {
+  margin-top: 8px;
+
+  color: #888;
+}
+
+.home-products-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 18px;
+}
+
+.home-product-card {
+  overflow: hidden;
+
+  border: 1px solid #292929;
+  border-radius: 16px;
+
+  background: #1c1c1c;
+
+  transition:
+    transform 0.2s,
+    border-color 0.2s;
+}
+
+.home-product-card:hover {
+  transform: translateY(-4px);
+
+  border-color: #4c4c4c;
+}
+
+.home-product-image {
+  height: 250px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    radial-gradient(
+      circle,
+      #2c2c2c,
+      #181818
+    );
+}
+
+.home-product-image img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.home-product-placeholder {
+  width: 130px;
+  height: 170px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 20px;
+
+  background: #090909;
+  color: #e10600;
+
+  font-size: 32px;
+  font-weight: 1000;
+
+  font-style: italic;
+}
+
+.home-product-content {
+  padding: 18px;
+}
+
+.home-product-category {
+  color: #e10600;
+
+  font-size: 10px;
+  font-weight: 850;
+
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.home-product-content h3 {
+  margin: 8px 0;
+
+  font-size: 17px;
+}
+
+.home-product-content p {
+  min-height: 40px;
+
+  margin: 0;
+
+  color: #8c8c8c;
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.home-product-footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  gap: 10px;
+
+  margin-top: 17px;
+}
+
+.home-product-footer strong {
+  font-size: 19px;
+}
+
+.home-product-footer span {
+  color: #777;
+
+  font-size: 11px;
+}
+
+.home-loading,
+.home-empty {
+  padding: 60px;
+
+  text-align: center;
+
+  color: #888;
+}
+
+/* =========================
+   BENEFICIOS
+========================= */
+
+.home-benefits {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 20px;
+
+  padding: 55px 6%;
+
+  background: #0d0d0d;
+}
+
+.home-benefit-card {
+  padding: 25px;
+
+  border: 1px solid #242424;
+  border-radius: 14px;
+}
+
+.home-benefit-card strong {
+  color: #e10600;
+
+  font-size: 17px;
+}
+
+.home-benefit-card p {
+  margin: 8px 0 0;
+
+  color: #888;
+
+  line-height: 1.5;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+.home-footer {
+  display: flex;
+
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 20px;
+
+  padding: 35px 6%;
+
+  border-top: 1px solid #222;
+
+  background: #080808;
+}
+
+.home-footer > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.home-footer strong {
+  font-size: 16px;
+}
+
+.home-footer span {
+  margin-top: 4px;
+
+  color: #777;
+
+  font-size: 12px;
+}
+
+.home-footer button {
+  border: 0;
+
+  background: transparent;
+  color: #e10600;
+
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.home-footer button:hover {
+  color: #ff241c;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1100px) {
+  .home-products-grid {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .home-nav-links {
+    display: none;
+  }
+
+  .home-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .home-hero-visual {
+    margin-top: 50px;
+  }
+
+  .home-products-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .home-navbar {
+    padding: 0 20px;
+  }
+
+  .home-brand > div:last-child {
+    display: none;
+  }
+
+  .home-login-button {
+    padding: 9px 12px;
+
+    font-size: 12px;
+  }
+
+  .home-hero {
+    min-height: auto;
+
+    padding:
+      55px 22px;
+  }
+
+  .home-hero h1 {
+    font-size: 47px;
+  }
+
+  .home-hero-description {
+    font-size: 15px;
+  }
+
+  .home-products-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .home-catalog {
+    padding:
+      55px 20px;
+  }
+
+  .home-benefits {
+    grid-template-columns: 1fr;
+
+    padding:
+      45px 20px;
+  }
+
+  .home-footer {
+    align-items: flex-start;
+    flex-direction: column;
+
+    padding:
+      30px 20px;
+  }
+
+  .hero-product-bottle {
+    width: 190px;
+    height: 260px;
+  }
+}
