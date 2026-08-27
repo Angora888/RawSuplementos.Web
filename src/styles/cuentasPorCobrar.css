@@ -1,0 +1,152 @@
+.collections-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 20px;
+}
+
+.collections-summary-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 140px;
+  padding: 20px;
+  border: 1px solid #e8e8e8;
+  border-radius: 15px;
+  background: #fff;
+}
+
+.collections-summary-card span {
+  color: #777;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.collections-summary-card strong {
+  margin-top: 12px;
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.collections-summary-card small {
+  margin-top: auto;
+  color: #999;
+}
+
+.collections-summary-card.dark {
+  border-color: #111;
+  background: #111;
+  color: #fff;
+}
+
+.collections-summary-card.dark span,
+.collections-summary-card.dark small {
+  color: #aaa;
+}
+
+.collections-summary-card.danger {
+  border-left: 4px solid #b42318;
+}
+
+.collections-summary-card.warning {
+  border-left: 4px solid #d69e00;
+}
+
+.collections-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.collections-toolbar h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 850;
+}
+
+.collections-toolbar p {
+  margin: 5px 0 0;
+  color: #888;
+  font-size: 13px;
+}
+
+.collections-toolbar input {
+  width: 280px;
+  padding: 11px 13px;
+  border: 1px solid #ddd;
+  border-radius: 9px;
+}
+
+.collections-row {
+  cursor: pointer;
+}
+
+.collections-row:hover {
+  background: #fafafa;
+}
+
+.collections-client {
+  display: flex;
+  flex-direction: column;
+}
+
+.collections-client span {
+  margin-top: 3px;
+  color: #999;
+  font-size: 12px;
+}
+
+.collection-status {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.collection-status.good {
+  background: #e8f5e9;
+  color: #267438;
+}
+
+.collection-status.warning {
+  background: #fff3d6;
+  color: #806000;
+}
+
+.collection-status.danger {
+  background: #ffe8e6;
+  color: #b42318;
+}
+
+.collections-client-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 1100px) {
+  .collections-summary-grid,
+  .collections-client-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .collections-summary-grid,
+  .collections-client-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .collections-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .collections-toolbar input {
+    width: 100%;
+  }
+}
