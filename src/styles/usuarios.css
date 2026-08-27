@@ -1,0 +1,26 @@
+.user-role {
+  display: inline-flex;
+  padding: 5px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.user-role.admin {
+  background: #111;
+  color: #fff;
+}
+
+.user-role.seller {
+  background: #eef2f5;
+  color: #45515c;
+}
+
+.danger-action {
+  border-color: #ffd6d2;
+  color: #b42318;
+}
+
+.danger-action:hover {
+  background: #fff3f2;
+}
