@@ -1,0 +1,108 @@
+.sales-filter-card {
+  margin-bottom: 20px;
+}
+
+.sales-filters {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) 170px 160px 160px auto;
+  gap: 14px;
+  align-items: end;
+}
+
+.sales-filters .form-group {
+  margin-bottom: 0;
+}
+
+.sales-filter-actions {
+  display: flex;
+  gap: 8px;
+  padding-bottom: 1px;
+}
+
+.sales-list-card {
+  min-width: 0;
+}
+
+.sales-row {
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.sales-row:hover {
+  background: #f8f8f8;
+}
+
+.sales-client {
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+}
+
+.sales-client span {
+  margin-top: 3px;
+  color: #999;
+  font-size: 12px;
+}
+
+.sales-paid {
+  color: #267438;
+  font-weight: 700;
+}
+
+.sales-debt {
+  color: #b42318;
+}
+
+.sale-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.sale-status.paid {
+  background: #e8f5e9;
+  color: #267438;
+}
+
+.sale-status.partial {
+  background: #fff3d6;
+  color: #806000;
+}
+
+.sale-status.pending {
+  background: #ffe8e6;
+  color: #b42318;
+}
+
+.sale-status.cancelled {
+  background: #ededed;
+  color: #666;
+}
+
+@media (max-width: 1200px) {
+  .sales-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sales-filter-actions {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 700px) {
+  .sales-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .sales-filter-actions {
+    grid-column: auto;
+  }
+
+  .sales-filter-actions button {
+    flex: 1;
+  }
+}
