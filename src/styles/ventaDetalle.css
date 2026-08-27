@@ -1,0 +1,145 @@
+.sale-detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 350px;
+  gap: 20px;
+  align-items: start;
+  margin-bottom: 20px;
+}
+
+.sale-detail-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.sale-detail-header h2 {
+  margin: 4px 0;
+  font-size: 24px;
+  font-weight: 850;
+}
+
+.sale-detail-header p {
+  margin: 3px 0;
+  color: #777;
+  font-size: 13px;
+}
+
+.sale-detail-label {
+  color: #999;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.sale-detail-info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 25px;
+}
+
+.sale-detail-info-grid > div {
+  padding: 13px;
+  border-radius: 10px;
+  background: #f7f7f7;
+}
+
+.sale-detail-info-grid span {
+  display: block;
+  margin-bottom: 4px;
+  color: #888;
+  font-size: 11px;
+}
+
+.sale-detail-info-grid strong {
+  color: #222;
+  font-size: 13px;
+}
+
+.sale-notes {
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #eee;
+  border-radius: 10px;
+}
+
+.sale-notes p {
+  margin: 5px 0 0;
+  color: #666;
+}
+
+.sale-detail-summary {
+  position: sticky;
+  top: 24px;
+}
+
+.sale-detail-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-top: 20px;
+}
+
+.sale-detail-actions button {
+  width: 100%;
+}
+
+.sale-detail-section {
+  margin-bottom: 20px;
+}
+
+.btn-danger-app {
+  border: none;
+  border-radius: 9px;
+  padding: 11px 16px;
+  background: #b42318;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-danger-app:hover {
+  background: #921d14;
+}
+
+.btn-danger-app:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.sale-cancel-modal {
+  max-width: 480px;
+}
+
+.sale-cancel-warning {
+  margin-bottom: 20px;
+  padding: 13px 15px;
+  border: 1px solid #ffd7d3;
+  border-radius: 10px;
+  background: #fff5f4;
+  color: #9d261d;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+@media (max-width: 1050px) {
+  .sale-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sale-detail-summary {
+    position: static;
+  }
+}
+
+@media (max-width: 700px) {
+  .sale-detail-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sale-detail-header {
+    flex-direction: column;
+  }
+}
