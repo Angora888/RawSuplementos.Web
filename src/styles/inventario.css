@@ -1,0 +1,98 @@
+.inventory-layout {
+  display: grid;
+  grid-template-columns: 380px minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.section-heading {
+  margin-bottom: 22px;
+}
+
+.section-heading h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.section-heading p {
+  margin: 5px 0 0;
+  color: #888;
+  font-size: 13px;
+}
+
+.inventory-stock-card {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  padding: 18px;
+  border-radius: 13px;
+  background: #111;
+  color: white;
+}
+
+.inventory-stock-card span {
+  font-size: 12px;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+}
+
+.inventory-stock-card strong {
+  margin-top: 4px;
+  font-size: 34px;
+  font-weight: 900;
+}
+
+.inventory-stock-card small {
+  margin-top: 3px;
+  color: #aaa;
+}
+
+.inventory-submit {
+  width: 100%;
+}
+
+.form-help {
+  display: block;
+  margin-top: 6px;
+  color: #888;
+  font-size: 12px;
+}
+
+.success-message {
+  margin-bottom: 18px;
+  padding: 13px 15px;
+  border-radius: 10px;
+  background: #e8f5e9;
+  color: #267438;
+  font-weight: 600;
+}
+
+.inventory-positive {
+  color: #267438;
+}
+
+.inventory-negative {
+  color: #b42318;
+}
+
+.inventory-type {
+  display: inline-block;
+  padding: 5px 9px;
+  border-radius: 20px;
+  background: #f0f0f0;
+  color: #555;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.inventory-history-card {
+  min-width: 0;
+}
+
+@media (max-width: 1100px) {
+  .inventory-layout {
+    grid-template-columns: 1fr;
+  }
+}
