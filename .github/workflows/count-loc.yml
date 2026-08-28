@@ -1,0 +1,95 @@
+name: Count LOC
+
+on:
+  push:
+    branches:
+      - loc-count-temp
+
+jobs:
+  count:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout frontend main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: frontend
+
+      - name: Checkout backend main
+        uses: actions/checkout@v4
+        with:
+          repository: Angora888/RawSuplementos.Api
+          ref: main
+          path: backend
+
+      - name: Count lines
+        shell: python
+        run: |
+          from pathlib import Path
+
+          def count_lines(path: Path):
+              text = path.read_text(encoding="utf-8", errors="ignore")
+              physical = len(text.splitlines())
+              nonblank = sum(1 for line in text.splitlines() if line.strip())
+              return physical, nonblank
+
+          def frontend_files():
+              root = Path("frontend")
+              allowed = {".js", ".jsx", ".css", ".html"}
+              for p in root.rglob("*"):
+                  if not p.is_file() or p.suffix.lower() not in allowed:
+                      continue
+                  if any(part in {"node_modules", "dist", ".git"} for part in p.parts):
+                      continue
+                  yield p
+
+          def backend_files(include_generated=False):
+              root = Path("backend")
+              allowed = {".cs"}
+              for p in root.rglob("*"):
+                  if not p.is_file() or p.suffix.lower() not in allowed:
+                      continue
+                  if any(part in {"bin", "obj", ".git"} for part in p.parts):
+                      continue
+                  if not include_generated and (p.name.endswith(".Designer.cs") or p.name == "ApplicationDbContextModelSnapshot.cs"):
+                      continue
+                  yield p
+
+          def summarize(files):
+              files = list(files)
+              physical = nonblank = 0
+              by_ext = {}
+              for p in files:
+                  a, b = count_lines(p)
+                  physical += a
+                  nonblank += b
+                  by_ext.setdefault(p.suffix.lower(), [0, 0, 0])
+                  by_ext[p.suffix.lower()][0] += 1
+                  by_ext[p.suffix.lower()][1] += a
+                  by_ext[p.suffix.lower()][2] += b
+              return files, physical, nonblank, by_ext
+
+          ff, fp, fn, fext = summarize(frontend_files())
+          bf, bp, bn, bext = summarize(backend_files(False))
+          bgf, bgp, bgn, bgext = summarize(backend_files(True))
+
+          print("=== RAW SUPLEMENTOS LOC REPORT ===")
+          print(f"FRONTEND_FILES={len(ff)}")
+          print(f"FRONTEND_PHYSICAL={fp}")
+          print(f"FRONTEND_NONBLANK={fn}")
+          for ext, vals in sorted(fext.items()):
+              print(f"FRONTEND_{ext[1:].upper()}_FILES={vals[0]}")
+              print(f"FRONTEND_{ext[1:].upper()}_PHYSICAL={vals[1]}")
+              print(f"FRONTEND_{ext[1:].upper()}_NONBLANK={vals[2]}")
+
+          print(f"BACKEND_FILES_EXCL_GENERATED={len(bf)}")
+          print(f"BACKEND_PHYSICAL_EXCL_GENERATED={bp}")
+          print(f"BACKEND_NONBLANK_EXCL_GENERATED={bn}")
+          print(f"BACKEND_FILES_INCL_GENERATED={len(bgf)}")
+          print(f"BACKEND_PHYSICAL_INCL_GENERATED={bgp}")
+          print(f"BACKEND_NONBLANK_INCL_GENERATED={bgn}")
+
+          print(f"TOTAL_PHYSICAL_EXCL_GENERATED={fp + bp}")
+          print(f"TOTAL_NONBLANK_EXCL_GENERATED={fn + bn}")
+          print(f"TOTAL_PHYSICAL_INCL_GENERATED={fp + bgp}")
+          print(f"TOTAL_NONBLANK_INCL_GENERATED={fn + bgn}")
