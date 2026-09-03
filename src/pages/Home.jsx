@@ -94,7 +94,7 @@ function Home() {
             </strong>
 
             <span>
-              SUPLEMENTOS
+              SUPLEMENTS
             </span>
           </div>
         </div>
@@ -144,7 +144,7 @@ function Home() {
         <div className="home-hero-content">
 
           <p className="home-eyebrow">
-            SUPLEMENTOS DEPORTIVOS
+            SUPLEMENTS DEPORTIVOS
           </p>
 
           <h1>
@@ -158,7 +158,7 @@ function Home() {
 
           <p className="home-hero-description">
             Encuentra proteínas, creatinas
-            y suplementos seleccionados
+            y suplements seleccionados
             para llevar tu entrenamiento
             al siguiente nivel.
           </p>
@@ -234,7 +234,7 @@ function Home() {
               </strong>
 
               <small>
-                SUPLEMENTOS
+                SUPLEMENTS
               </small>
 
             </div>
@@ -267,7 +267,7 @@ function Home() {
             </h2>
 
             <p>
-              Suplementos disponibles
+              Suplements disponibles
               actualmente.
             </p>
 
@@ -340,7 +340,7 @@ function Home() {
                     <p>
 
                       {producto.marca ||
-                        "RAW Suplementos"}
+                        "RAW Suplements"}
 
                       {producto.presentacion
                         ? ` · ${producto.presentacion}`
@@ -395,7 +395,7 @@ function Home() {
           </strong>
 
           <p>
-            Suplementos seleccionados para
+            Suplements seleccionados para
             acompañar tus objetivos.
           </p>
 
@@ -438,7 +438,7 @@ function Home() {
         <div>
 
           <strong>
-            RAW Suplementos
+            RAW Suplements
           </strong>
 
           <span>
