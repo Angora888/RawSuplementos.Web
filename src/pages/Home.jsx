@@ -267,7 +267,7 @@ function Home() {
             </h2>
 
             <p>
-              Suplements disponibles
+              Suplementos disponibles
               actualmente.
             </p>
 
