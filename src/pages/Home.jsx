@@ -144,7 +144,7 @@ function Home() {
         <div className="home-hero-content">
 
           <p className="home-eyebrow">
-            SUPLEMENTS DEPORTIVOS
+            SUPLEMENTOS DEPORTIVOS
           </p>
 
           <h1>
@@ -158,7 +158,7 @@ function Home() {
 
           <p className="home-hero-description">
             Encuentra proteínas, creatinas
-            y suplements seleccionados
+            y suplementos seleccionados
             para llevar tu entrenamiento
             al siguiente nivel.
           </p>
@@ -395,7 +395,7 @@ function Home() {
           </strong>
 
           <p>
-            Suplements seleccionados para
+            Suplementos seleccionados para
             acompañar tus objetivos.
           </p>
 
