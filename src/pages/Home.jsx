@@ -20,11 +20,6 @@ function Home() {
       const response =
         await api.get("/Productos/catalogo");
 
-      console.log(
-        "Catálogo público:",
-        response.data
-      );
-
       setProductos(
         response.data || []
       );
