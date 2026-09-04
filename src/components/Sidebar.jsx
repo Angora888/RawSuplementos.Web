@@ -19,7 +19,7 @@ function Sidebar({
 
     cerrarMenu();
 
-    navigate("/login");
+    navigate("/");
   };
 
   const handleNavegacion = () => {
