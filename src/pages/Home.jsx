@@ -56,6 +56,36 @@ function Home() {
     }).format(valor || 0);
   };
 
+  const pedirPorWhatsApp = (producto) => {
+    const numeroWhatsApp = "50660662375";
+
+    const detalles = [
+      producto.marca,
+      producto.presentacion,
+      producto.sabor,
+    ]
+      .filter(Boolean)
+      .join(" · ");
+
+    const mensaje = [
+      "Hola 👋 Quiero pedir este producto de RAW Suplements:",
+      "",
+      `Producto: ${producto.nombre}`,
+      detalles ? `Detalle: ${detalles}` : null,
+      `Precio: ${moneda(producto.precioVenta)}`,
+      "",
+      "¿Me confirmas disponibilidad, por favor?",
+    ]
+      .filter(Boolean)
+      .join("\n");
+
+    const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(
+      mensaje
+    )}`;
+
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
   const irCatalogo = () => {
     document
       .getElementById("catalogo")
@@ -254,7 +284,17 @@ function Home() {
                       {moneda(producto.precioVenta)}
                     </strong>
 
-                    <span>Disponible</span>
+                    <div className="home-product-order-actions">
+                      <span>Disponible</span>
+
+                      <button
+                        type="button"
+                        className="home-order-button"
+                        onClick={() => pedirPorWhatsApp(producto)}
+                      >
+                        Pedir
+                      </button>
+                    </div>
                   </div>
                 </div>
               </article>
