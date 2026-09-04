@@ -4,21 +4,15 @@ import api from "../services/api";
 function Productos() {
   const [productos, setProductos] = useState([]);
   const [categorias, setCategorias] = useState([]);
-
   const [cargando, setCargando] = useState(true);
+  const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState("");
-
-  const [mostrarFormulario, setMostrarFormulario] =
-    useState(false);
-
-  const [editandoId, setEditandoId] =
-    useState(null);
-
-  const [mostrarCategoria, setMostrarCategoria] =
-    useState(false);
-
-  const [nombreCategoria, setNombreCategoria] =
-    useState("");
+  const [mostrarFormulario, setMostrarFormulario] = useState(false);
+  const [editandoId, setEditandoId] = useState(null);
+  const [mostrarCategoria, setMostrarCategoria] = useState(false);
+  const [nombreCategoria, setNombreCategoria] = useState("");
+  const [archivoImagen, setArchivoImagen] = useState(null);
+  const [vistaPrevia, setVistaPrevia] = useState("");
 
   const [form, setForm] = useState({
     nombre: "",
@@ -41,56 +35,48 @@ function Productos() {
     try {
       setCargando(true);
 
-      const [
-        productosResponse,
-        categoriasResponse,
-      ] = await Promise.all([
-        api.get("/Productos"),
-        api.get("/Categorias"),
-      ]);
+      const [productosResponse, categoriasResponse] =
+        await Promise.all([
+          api.get("/Productos"),
+          api.get("/Categorias"),
+        ]);
 
       setProductos(productosResponse.data);
       setCategorias(categoriasResponse.data);
-
       setError("");
     } catch (error) {
       console.error(error);
-
-      setError(
-        "No fue posible cargar los productos."
-      );
+      setError("No fue posible cargar los productos.");
     } finally {
       setCargando(false);
     }
   };
 
-  const moneda = (valor) => {
-    return new Intl.NumberFormat("es-CR", {
+  const moneda = (valor) =>
+    new Intl.NumberFormat("es-CR", {
       style: "currency",
       currency: "CRC",
       maximumFractionDigits: 0,
     }).format(valor || 0);
-  };
 
   const handleChange = (e) => {
-    const {
-      name,
-      value,
-      type,
-      checked,
-    } = e.target;
+    const { name, value, type, checked } = e.target;
 
     setForm((prev) => ({
       ...prev,
-
-      [name]:
-        type === "checkbox"
-          ? checked
-          : value,
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
+  const limpiarVistaPreviaLocal = () => {
+    if (vistaPrevia?.startsWith("blob:")) {
+      URL.revokeObjectURL(vistaPrevia);
+    }
+  };
+
   const limpiarFormulario = () => {
+    limpiarVistaPreviaLocal();
+
     setForm({
       nombre: "",
       marca: "",
@@ -104,6 +90,8 @@ function Productos() {
       activo: true,
     });
 
+    setArchivoImagen(null);
+    setVistaPrevia("");
     setEditandoId(null);
   };
 
@@ -113,100 +101,120 @@ function Productos() {
   };
 
   const editarProducto = (producto) => {
+    limpiarVistaPreviaLocal();
     setEditandoId(producto.id);
+    setArchivoImagen(null);
+    setVistaPrevia(producto.imageUrl || "");
 
     setForm({
       nombre: producto.nombre || "",
       marca: producto.marca || "",
-      presentacion:
-        producto.presentacion || "",
+      presentacion: producto.presentacion || "",
       sabor: producto.sabor || "",
-
-      precioCompra:
-        producto.precioCompra ?? "",
-
-      precioVenta:
-        producto.precioVenta ?? "",
-
-      stockMinimo:
-        producto.stockMinimo ?? "",
-
-      imageUrl:
-        producto.imageUrl || "",
-
-      categoriaId:
-        producto.categoriaId || "",
-
-      activo:
-        producto.activo,
+      precioCompra: producto.precioCompra ?? "",
+      precioVenta: producto.precioVenta ?? "",
+      stockMinimo: producto.stockMinimo ?? "",
+      imageUrl: producto.imageUrl || "",
+      categoriaId: producto.categoriaId || "",
+      activo: producto.activo,
     });
 
     setMostrarFormulario(true);
+  };
+
+  const seleccionarImagen = (e) => {
+    const archivo = e.target.files?.[0];
+
+    if (!archivo) {
+      return;
+    }
+
+    const tiposPermitidos = [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+    ];
+
+    if (!tiposPermitidos.includes(archivo.type)) {
+      setError("La imagen debe ser JPG, PNG o WEBP.");
+      e.target.value = "";
+      return;
+    }
+
+    if (archivo.size > 5 * 1024 * 1024) {
+      setError("La imagen no puede superar los 5 MB.");
+      e.target.value = "";
+      return;
+    }
+
+    limpiarVistaPreviaLocal();
+    setArchivoImagen(archivo);
+    setVistaPrevia(URL.createObjectURL(archivo));
+    setError("");
+  };
+
+  const subirImagen = async () => {
+    if (!archivoImagen) {
+      return form.imageUrl.trim() || null;
+    }
+
+    const formData = new FormData();
+    formData.append("archivo", archivoImagen);
+
+    const response = await api.post(
+      "/Imagenes/productos",
+      formData
+    );
+
+    return response.data.url;
   };
 
   const guardarProducto = async (e) => {
     e.preventDefault();
 
     try {
+      setGuardando(true);
       setError("");
+
+      const imageUrl = await subirImagen();
 
       const payload = {
         nombre: form.nombre.trim(),
-
-        marca:
-          form.marca.trim() || null,
-
-        presentacion:
-          form.presentacion.trim() || null,
-
-        sabor:
-          form.sabor.trim() || null,
-
-        precioCompra:
-          Number(form.precioCompra),
-
-        precioVenta:
-          Number(form.precioVenta),
-
-        stockMinimo:
-          Number(form.stockMinimo),
-
-        imageUrl:
-          form.imageUrl.trim() || null,
-
-        categoriaId:
-          Number(form.categoriaId),
+        marca: form.marca.trim() || null,
+        presentacion: form.presentacion.trim() || null,
+        sabor: form.sabor.trim() || null,
+        precioCompra: Number(form.precioCompra),
+        precioVenta: Number(form.precioVenta),
+        stockMinimo: Number(form.stockMinimo),
+        imageUrl,
+        categoriaId: Number(form.categoriaId),
       };
 
       if (editandoId) {
-        await api.put(
-          `/Productos/${editandoId}`,
-          {
-            ...payload,
-            activo: form.activo,
-          }
-        );
+        await api.put(`/Productos/${editandoId}`, {
+          ...payload,
+          activo: form.activo,
+        });
       } else {
-        await api.post(
-          "/Productos",
-          payload
-        );
+        await api.post("/Productos", payload);
       }
 
       setMostrarFormulario(false);
       limpiarFormulario();
-
       await cargarDatos();
     } catch (error) {
       console.error(error);
 
+      const data = error.response?.data;
       const mensaje =
-        typeof error.response?.data ===
-        "string"
-          ? error.response.data
-          : "No fue posible guardar el producto.";
+        typeof data === "string"
+          ? data
+          : data?.title ||
+            "No fue posible guardar el producto.";
 
       setError(mensaje);
+    } finally {
+      setGuardando(false);
     }
   };
 
@@ -220,25 +228,16 @@ function Productos() {
     try {
       setError("");
 
-      const response = await api.post(
-        "/Categorias",
-        {
-          nombre: nombreCategoria.trim(),
-        }
-      );
+      const response = await api.post("/Categorias", {
+        nombre: nombreCategoria.trim(),
+      });
 
-      const nuevaCategoria =
-        response.data;
+      const nuevaCategoria = response.data;
 
-      setCategorias((prev) => [
-        ...prev,
-        nuevaCategoria,
-      ]);
-
+      setCategorias((prev) => [...prev, nuevaCategoria]);
       setForm((prev) => ({
         ...prev,
-        categoriaId:
-          nuevaCategoria.id,
+        categoriaId: nuevaCategoria.id,
       }));
 
       setNombreCategoria("");
@@ -247,8 +246,7 @@ function Productos() {
       console.error(error);
 
       setError(
-        typeof error.response?.data ===
-        "string"
+        typeof error.response?.data === "string"
           ? error.response.data
           : "No fue posible crear la categoría."
       );
@@ -267,19 +265,11 @@ function Productos() {
 
   return (
     <div className="page-container">
-
       <div className="page-header page-header-actions">
         <div>
-          <p className="page-eyebrow">
-            INVENTARIO
-          </p>
-
+          <p className="page-eyebrow">INVENTARIO</p>
           <h1>Productos</h1>
-
-          <p>
-            Administra suplementos, precios
-            y niveles de stock.
-          </p>
+          <p>Administra suplementos, precios y niveles de stock.</p>
         </div>
 
         <button
@@ -291,13 +281,10 @@ function Productos() {
       </div>
 
       {error && (
-        <div className="dashboard-error">
-          {error}
-        </div>
+        <div className="dashboard-error">{error}</div>
       )}
 
       <div className="content-card">
-
         {cargando ? (
           <p>Cargando productos...</p>
         ) : productos.length === 0 ? (
@@ -306,7 +293,6 @@ function Productos() {
           </div>
         ) : (
           <div className="table-responsive">
-
             <table className="app-table">
               <thead>
                 <tr>
@@ -321,151 +307,88 @@ function Productos() {
               </thead>
 
               <tbody>
-
-                {productos.map(
-                  (producto) => (
-
-                    <tr key={producto.id}>
-
-                      <td>
-                        <div className="product-cell">
-
-                          {producto.imageUrl ? (
-                            <img
-                              src={
-                                producto.imageUrl
-                              }
-                              alt={
-                                producto.nombre
-                              }
-                            />
-                          ) : (
-                            <div className="product-placeholder">
-                              RAW
-                            </div>
-                          )}
-
-                          <div>
-                            <strong>
-                              {producto.nombre}
-                            </strong>
-
-                            <div className="table-secondary">
-                              {producto.marca ||
-                                "Sin marca"}
-
-                              {producto.presentacion
-                                ? ` · ${producto.presentacion}`
-                                : ""}
-
-                              {producto.sabor
-                                ? ` · ${producto.sabor}`
-                                : ""}
-                            </div>
-                          </div>
-
-                        </div>
-                      </td>
-
-                      <td>
-                        {producto.categoria}
-                      </td>
-
-                      <td>
-                        {moneda(
-                          producto.precioCompra
-                        )}
-                      </td>
-
-                      <td>
-                        <strong>
-                          {moneda(
-                            producto.precioVenta
-                          )}
-                        </strong>
-                      </td>
-
-                      <td>
-                        <strong>
-                          {producto.stock}
-                        </strong>
-
-                        <div className="table-secondary">
-                          Mínimo:{" "}
-                          {
-                            producto.stockMinimo
-                          }
-                        </div>
-                      </td>
-
-                      <td>
-
-                        {producto.stock <= 0 ? (
-
-                          <span className="badge-stock danger">
-                            Sin stock
-                          </span>
-
-                        ) : producto.stockBajo ? (
-
-                          <span className="badge-stock warning">
-                            Stock bajo
-                          </span>
-
+                {productos.map((producto) => (
+                  <tr key={producto.id}>
+                    <td>
+                      <div className="product-cell">
+                        {producto.imageUrl ? (
+                          <img
+                            src={producto.imageUrl}
+                            alt={producto.nombre}
+                          />
                         ) : (
-
-                          <span className="badge-stock good">
-                            Disponible
-                          </span>
-
+                          <div className="product-placeholder">
+                            RAW
+                          </div>
                         )}
 
-                      </td>
+                        <div>
+                          <strong>{producto.nombre}</strong>
+                          <div className="table-secondary">
+                            {producto.marca || "Sin marca"}
+                            {producto.presentacion
+                              ? ` · ${producto.presentacion}`
+                              : ""}
+                            {producto.sabor
+                              ? ` · ${producto.sabor}`
+                              : ""}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
 
-                      <td>
-                        <button
-                          className="table-action"
-                          onClick={() =>
-                            editarProducto(
-                              producto
-                            )
-                          }
-                        >
-                          Editar
-                        </button>
-                      </td>
-
-                    </tr>
-                  )
-                )}
-
+                    <td>{producto.categoria}</td>
+                    <td>{moneda(producto.precioCompra)}</td>
+                    <td>
+                      <strong>{moneda(producto.precioVenta)}</strong>
+                    </td>
+                    <td>
+                      <strong>{producto.stock}</strong>
+                      <div className="table-secondary">
+                        Mínimo: {producto.stockMinimo}
+                      </div>
+                    </td>
+                    <td>
+                      {producto.stock <= 0 ? (
+                        <span className="badge-stock danger">
+                          Sin stock
+                        </span>
+                      ) : producto.stockBajo ? (
+                        <span className="badge-stock warning">
+                          Stock bajo
+                        </span>
+                      ) : (
+                        <span className="badge-stock good">
+                          Disponible
+                        </span>
+                      )}
+                    </td>
+                    <td>
+                      <button
+                        className="table-action"
+                        onClick={() => editarProducto(producto)}
+                      >
+                        Editar
+                      </button>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
-
           </div>
         )}
-
       </div>
 
-      {/* ========================================= */}
-      {/* MODAL PRODUCTO */}
-      {/* ========================================= */}
-
       {mostrarFormulario && (
-
         <div className="modal-overlay">
-
           <div className="app-modal product-modal">
-
             <div className="modal-header-app">
-
               <div>
                 <h2>
                   {editandoId
                     ? "Editar producto"
                     : "Nuevo producto"}
                 </h2>
-
                 <p>
                   {editandoId
                     ? "Actualiza los datos del producto."
@@ -480,20 +403,12 @@ function Productos() {
               >
                 ×
               </button>
-
             </div>
 
-            <form
-              onSubmit={guardarProducto}
-            >
-
+            <form onSubmit={guardarProducto}>
               <div className="form-grid">
-
                 <div className="form-group form-grid-full">
-                  <label>
-                    Nombre del producto
-                  </label>
-
+                  <label>Nombre del producto</label>
                   <input
                     type="text"
                     name="nombre"
@@ -504,10 +419,7 @@ function Productos() {
                 </div>
 
                 <div className="form-group">
-                  <label>
-                    Marca
-                  </label>
-
+                  <label>Marca</label>
                   <input
                     type="text"
                     name="marca"
@@ -516,28 +428,16 @@ function Productos() {
                   />
                 </div>
 
-                {/* ============================= */}
-                {/* CATEGORIA */}
-                {/* ============================= */}
-
                 <div className="form-group">
-
                   <div className="category-label-row">
-
-                    <label>
-                      Categoría
-                    </label>
-
+                    <label>Categoría</label>
                     <button
                       type="button"
                       className="category-add-button"
-                      onClick={() =>
-                        setMostrarCategoria(true)
-                      }
+                      onClick={() => setMostrarCategoria(true)}
                     >
                       + Nueva categoría
                     </button>
-
                   </div>
 
                   <select
@@ -546,59 +446,33 @@ function Productos() {
                     onChange={handleChange}
                     required
                   >
-                    <option value="">
-                      Seleccionar...
-                    </option>
-
+                    <option value="">Seleccionar...</option>
                     {categorias
-                      .filter(
-                        (categoria) =>
-                          categoria.activa
-                      )
-                      .map(
-                        (categoria) => (
-
-                          <option
-                            key={
-                              categoria.id
-                            }
-                            value={
-                              categoria.id
-                            }
-                          >
-                            {
-                              categoria.nombre
-                            }
-                          </option>
-
-                        )
-                      )}
-
+                      .filter((categoria) => categoria.activa)
+                      .map((categoria) => (
+                        <option
+                          key={categoria.id}
+                          value={categoria.id}
+                        >
+                          {categoria.nombre}
+                        </option>
+                      ))}
                   </select>
-
                 </div>
 
                 <div className="form-group">
-                  <label>
-                    Presentación
-                  </label>
-
+                  <label>Presentación</label>
                   <input
                     type="text"
                     name="presentacion"
-                    value={
-                      form.presentacion
-                    }
+                    value={form.presentacion}
                     onChange={handleChange}
                     placeholder="Ej: 5 lb"
                   />
                 </div>
 
                 <div className="form-group">
-                  <label>
-                    Sabor
-                  </label>
-
+                  <label>Sabor</label>
                   <input
                     type="text"
                     name="sabor"
@@ -609,16 +483,11 @@ function Productos() {
                 </div>
 
                 <div className="form-group">
-                  <label>
-                    Precio compra
-                  </label>
-
+                  <label>Precio compra</label>
                   <input
                     type="number"
                     name="precioCompra"
-                    value={
-                      form.precioCompra
-                    }
+                    value={form.precioCompra}
                     onChange={handleChange}
                     min="0"
                     required
@@ -626,16 +495,11 @@ function Productos() {
                 </div>
 
                 <div className="form-group">
-                  <label>
-                    Precio venta
-                  </label>
-
+                  <label>Precio venta</label>
                   <input
                     type="number"
                     name="precioVenta"
-                    value={
-                      form.precioVenta
-                    }
+                    value={form.precioVenta}
                     onChange={handleChange}
                     min="0"
                     required
@@ -643,84 +507,82 @@ function Productos() {
                 </div>
 
                 <div className="form-group">
-                  <label>
-                    Stock mínimo
-                  </label>
-
+                  <label>Stock mínimo</label>
                   <input
                     type="number"
                     name="stockMinimo"
-                    value={
-                      form.stockMinimo
-                    }
+                    value={form.stockMinimo}
                     onChange={handleChange}
                     min="0"
                     required
                   />
                 </div>
 
-                <div className="form-group">
-                  <label>
-                    URL imagen
-                  </label>
-
+                <div className="form-group form-grid-full">
+                  <label>Imagen del producto</label>
                   <input
-                    type="text"
-                    name="imageUrl"
-                    value={
-                      form.imageUrl
-                    }
-                    onChange={
-                      handleChange
-                    }
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    onChange={seleccionarImagen}
                   />
+                  <small className="table-secondary">
+                    JPG, PNG o WEBP. Máximo 5 MB.
+                  </small>
+
+                  {vistaPrevia && (
+                    <div
+                      style={{
+                        marginTop: "12px",
+                        width: "130px",
+                        height: "130px",
+                        border: "1px solid #e5e5e5",
+                        borderRadius: "12px",
+                        overflow: "hidden",
+                        background: "#fafafa",
+                      }}
+                    >
+                      <img
+                        src={vistaPrevia}
+                        alt="Vista previa del producto"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "contain",
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
 
                 {editandoId && (
-
                   <div className="form-group form-grid-full">
-
                     <label className="checkbox-row">
-
                       <input
                         type="checkbox"
                         name="activo"
-                        checked={
-                          form.activo
-                        }
-                        onChange={
-                          handleChange
-                        }
+                        checked={form.activo}
+                        onChange={handleChange}
                       />
-
                       Producto activo
-
                     </label>
-
                   </div>
                 )}
 
                 {editandoId && (
-
                   <div className="stock-info form-grid-full">
-
-                    El stock no se modifica
-                    desde esta pantalla.
-                    Utiliza Inventario para
-                    registrar entradas,
+                    El stock no se modifica desde esta pantalla.
+                    Utiliza Inventario para registrar entradas,
                     pérdidas o ajustes.
-
                   </div>
                 )}
-
               </div>
 
               <div className="modal-actions">
-
                 <button
                   type="button"
                   className="btn-secondary-app"
                   onClick={cerrarModal}
+                  disabled={guardando}
                 >
                   Cancelar
                 </button>
@@ -728,91 +590,58 @@ function Productos() {
                 <button
                   type="submit"
                   className="btn-primary-app"
+                  disabled={guardando}
                 >
-                  {editandoId
-                    ? "Guardar cambios"
-                    : "Crear producto"}
+                  {guardando
+                    ? "Guardando..."
+                    : editandoId
+                      ? "Guardar cambios"
+                      : "Crear producto"}
                 </button>
-
               </div>
-
             </form>
-
           </div>
-
         </div>
       )}
 
-      {/* ========================================= */}
-      {/* MODAL NUEVA CATEGORIA */}
-      {/* ========================================= */}
-
       {mostrarCategoria && (
-
         <div className="modal-overlay category-modal-overlay">
-
           <div className="app-modal category-modal">
-
             <div className="modal-header-app">
-
               <div>
-                <h2>
-                  Nueva categoría
-                </h2>
-
-                <p>
-                  Crea una categoría sin
-                  salir del producto.
-                </p>
+                <h2>Nueva categoría</h2>
+                <p>Crea una categoría sin salir del producto.</p>
               </div>
 
               <button
                 type="button"
                 className="modal-close"
-                onClick={
-                  cerrarCategoria
-                }
+                onClick={cerrarCategoria}
               >
                 ×
               </button>
-
             </div>
 
-            <form
-              onSubmit={crearCategoria}
-            >
-
+            <form onSubmit={crearCategoria}>
               <div className="form-group">
-
-                <label>
-                  Nombre de la categoría
-                </label>
-
+                <label>Nombre de la categoría</label>
                 <input
                   type="text"
-                  value={
-                    nombreCategoria
-                  }
+                  value={nombreCategoria}
                   onChange={(e) =>
-                    setNombreCategoria(
-                      e.target.value
-                    )
+                    setNombreCategoria(e.target.value)
                   }
                   placeholder="Ej: Vitaminas"
                   autoFocus
                   required
                 />
-
               </div>
 
               <div className="modal-actions">
-
                 <button
                   type="button"
                   className="btn-secondary-app"
-                  onClick={
-                    cerrarCategoria
-                  }
+                  onClick={cerrarCategoria}
                 >
                   Cancelar
                 </button>
@@ -823,16 +652,11 @@ function Productos() {
                 >
                   Crear categoría
                 </button>
-
               </div>
-
             </form>
-
           </div>
-
         </div>
       )}
-
     </div>
   );
 }
