@@ -9,6 +9,19 @@ function Home() {
   const [productos, setProductos] = useState([]);
   const [cargando, setCargando] = useState(true);
 
+  const sesionActiva = Boolean(
+    localStorage.getItem("token") &&
+      localStorage.getItem("usuario")
+  );
+
+  const rutaAdministracion = sesionActiva
+    ? "/dashboard"
+    : "/login";
+
+  const textoAdministracion = sesionActiva
+    ? "Volver al Dashboard"
+    : "Iniciar sesión";
+
   useEffect(() => {
     cargarProductos();
   }, []);
@@ -68,13 +81,7 @@ function Home() {
 
   return (
     <div className="home-page">
-
-      {/* ========================= */}
-      {/* NAVBAR */}
-      {/* ========================= */}
-
       <header className="home-navbar">
-
         <div
           className="home-brand"
           onClick={irInicio}
@@ -84,60 +91,35 @@ function Home() {
           </div>
 
           <div>
-            <strong>
-              RAW
-            </strong>
-
-            <span>
-              SUPLEMENTS
-            </span>
+            <strong>RAW</strong>
+            <span>SUPLEMENTS</span>
           </div>
         </div>
 
         <nav className="home-nav-links">
-
-          <button
-            type="button"
-            onClick={irInicio}
-          >
+          <button type="button" onClick={irInicio}>
             Inicio
           </button>
 
-          <button
-            type="button"
-            onClick={irCatalogo}
-          >
+          <button type="button" onClick={irCatalogo}>
             Catálogo
           </button>
 
-          <button
-            type="button"
-            onClick={irBeneficios}
-          >
+          <button type="button" onClick={irBeneficios}>
             Nosotros
           </button>
-
         </nav>
 
         <button
           className="home-login-button"
-          onClick={() =>
-            navigate("/login")
-          }
+          onClick={() => navigate(rutaAdministracion)}
         >
-          Iniciar sesión
+          {textoAdministracion}
         </button>
-
       </header>
 
-      {/* ========================= */}
-      {/* HERO */}
-      {/* ========================= */}
-
       <section className="home-hero">
-
         <div className="home-hero-content">
-
           <p className="home-eyebrow">
             SUPLEMENTOS DEPORTIVOS
           </p>
@@ -145,10 +127,7 @@ function Home() {
           <h1>
             FUERZA REAL.
             <br />
-
-            <span>
-              RESULTADOS RAW.
-            </span>
+            <span>RESULTADOS RAW.</span>
           </h1>
 
           <p className="home-hero-description">
@@ -159,7 +138,6 @@ function Home() {
           </p>
 
           <div className="home-hero-actions">
-
             <button
               className="home-primary-button"
               onClick={irCatalogo}
@@ -169,290 +147,164 @@ function Home() {
 
             <button
               className="home-secondary-button"
-              onClick={() =>
-                navigate("/login")
-              }
+              onClick={() => navigate(rutaAdministracion)}
             >
-              Administración
+              {sesionActiva
+                ? "Volver al Dashboard"
+                : "Administración"}
             </button>
-
           </div>
 
           <div className="home-hero-features">
-
             <div>
-              <strong>
-                Productos originales
-              </strong>
-
-              <span>
-                Calidad garantizada
-              </span>
+              <strong>Productos originales</strong>
+              <span>Calidad garantizada</span>
             </div>
 
             <div>
-              <strong>
-                Atención directa
-              </strong>
-
-              <span>
-                Compra fácil y rápida
-              </span>
+              <strong>Atención directa</strong>
+              <span>Compra fácil y rápida</span>
             </div>
 
             <div>
-              <strong>
-                Stock actualizado
-              </strong>
-
-              <span>
-                Consulta disponibilidad
-              </span>
+              <strong>Stock actualizado</strong>
+              <span>Consulta disponibilidad</span>
             </div>
-
           </div>
-
         </div>
 
         <div className="home-hero-visual">
-
           <div className="hero-product-circle">
-
             <div className="hero-product-bottle">
-
-              <span>
-                RAW
-              </span>
-
-              <strong>
-                WHEY
-              </strong>
-
-              <small>
-                SUPLEMENTS
-              </small>
-
+              <span>RAW</span>
+              <strong>WHEY</strong>
+              <small>SUPLEMENTS</small>
             </div>
-
           </div>
-
         </div>
-
       </section>
-
-      {/* ========================= */}
-      {/* CATÁLOGO */}
-      {/* ========================= */}
 
       <section
         id="catalogo"
         className="home-catalog"
       >
-
         <div className="home-section-header">
-
           <div>
-
             <p className="home-eyebrow">
               CATÁLOGO
             </p>
 
-            <h2>
-              Nuestros productos
-            </h2>
+            <h2>Nuestros productos</h2>
 
             <p>
               Suplementos disponibles
               actualmente.
             </p>
-
           </div>
-
         </div>
 
         {cargando ? (
-
           <div className="home-loading">
             Cargando catálogo...
           </div>
-
         ) : productos.length === 0 ? (
-
           <div className="home-empty">
             En este momento no hay productos
             disponibles.
           </div>
-
         ) : (
-
           <div className="home-products-grid">
-
-            {productos.map(
-              (producto) => (
-
-                <article
-                  key={producto.id}
-                  className="home-product-card"
-                >
-
-                  {/* IMAGEN */}
-
-                  <div className="home-product-image">
-
-                    {producto.imageUrl ? (
-
-                      <img
-                        src={
-                          producto.imageUrl
-                        }
-                        alt={
-                          producto.nombre
-                        }
-                      />
-
-                    ) : (
-
-                      <div className="home-product-placeholder">
-                        RAW
-                      </div>
-
-                    )}
-
-                  </div>
-
-                  {/* INFORMACIÓN */}
-
-                  <div className="home-product-content">
-
-                    <span className="home-product-category">
-                      {producto.categoria}
-                    </span>
-
-                    <h3>
-                      {producto.nombre}
-                    </h3>
-
-                    <p>
-
-                      {producto.marca ||
-                        "RAW Suplements"}
-
-                      {producto.presentacion
-                        ? ` · ${producto.presentacion}`
-                        : ""}
-
-                      {producto.sabor
-                        ? ` · ${producto.sabor}`
-                        : ""}
-
-                    </p>
-
-                    {/* PRECIO / DISPONIBILIDAD */}
-
-                    <div className="home-product-footer">
-
-                      <strong>
-                        {moneda(
-                          producto.precioVenta
-                        )}
-                      </strong>
-
-                      <span>
-                        Disponible
-                      </span>
-
+            {productos.map((producto) => (
+              <article
+                key={producto.id}
+                className="home-product-card"
+              >
+                <div className="home-product-image">
+                  {producto.imageUrl ? (
+                    <img
+                      src={producto.imageUrl}
+                      alt={producto.nombre}
+                    />
+                  ) : (
+                    <div className="home-product-placeholder">
+                      RAW
                     </div>
+                  )}
+                </div>
 
+                <div className="home-product-content">
+                  <span className="home-product-category">
+                    {producto.categoria}
+                  </span>
+
+                  <h3>{producto.nombre}</h3>
+
+                  <p>
+                    {producto.marca || "RAW Suplements"}
+                    {producto.presentacion
+                      ? ` · ${producto.presentacion}`
+                      : ""}
+                    {producto.sabor
+                      ? ` · ${producto.sabor}`
+                      : ""}
+                  </p>
+
+                  <div className="home-product-footer">
+                    <strong>
+                      {moneda(producto.precioVenta)}
+                    </strong>
+
+                    <span>Disponible</span>
                   </div>
-
-                </article>
-              )
-            )}
-
+                </div>
+              </article>
+            ))}
           </div>
         )}
-
       </section>
-
-      {/* ========================= */}
-      {/* BENEFICIOS */}
-      {/* ========================= */}
 
       <section
         id="beneficios"
         className="home-benefits"
       >
-
         <div className="home-benefit-card">
-
-          <strong>
-            Calidad
-          </strong>
-
+          <strong>Calidad</strong>
           <p>
             Suplementos seleccionados para
             acompañar tus objetivos.
           </p>
-
         </div>
 
         <div className="home-benefit-card">
-
-          <strong>
-            Confianza
-          </strong>
-
+          <strong>Confianza</strong>
           <p>
             Información clara de precios
             y disponibilidad.
           </p>
-
         </div>
 
         <div className="home-benefit-card">
-
-          <strong>
-            Atención
-          </strong>
-
+          <strong>Atención</strong>
           <p>
             Servicio personalizado y
             comunicación directa.
           </p>
-
         </div>
-
       </section>
 
-      {/* ========================= */}
-      {/* FOOTER */}
-      {/* ========================= */}
-
       <footer className="home-footer">
-
         <div>
-
-          <strong>
-            RAW Suplements
-          </strong>
-
-          <span>
-            Entrena fuerte. Vive RAW.
-          </span>
-
+          <strong>RAW Suplements</strong>
+          <span>Entrena fuerte. Vive RAW.</span>
         </div>
 
         <button
           type="button"
-          onClick={() =>
-            navigate("/login")
-          }
+          onClick={() => navigate(rutaAdministracion)}
         >
-          Iniciar sesión
+          {textoAdministracion}
         </button>
-
       </footer>
-
     </div>
   );
 }
