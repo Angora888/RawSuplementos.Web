@@ -473,10 +473,36 @@ html {
   font-size: 19px;
 }
 
+.home-product-order-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .home-product-footer span {
   color: #777;
 
   font-size: 11px;
+}
+
+.home-order-button {
+  padding: 7px 11px;
+
+  border: 1px solid #25d366;
+  border-radius: 8px;
+
+  background: transparent;
+  color: #25d366;
+
+  font-size: 11px;
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+.home-order-button:hover {
+  background: #25d366;
+  color: #0b0b0b;
 }
 
 .home-loading,
@@ -644,6 +670,14 @@ html {
   .home-catalog {
     padding:
       55px 20px;
+  }
+
+  .home-product-footer {
+    align-items: center;
+  }
+
+  .home-product-order-actions {
+    gap: 10px;
   }
 
   .home-benefits {
