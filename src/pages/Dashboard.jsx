@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import "../styles/dashboard.css";
 
 function Dashboard() {
+  const navigate = useNavigate();
   const [datos, setDatos] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
@@ -147,13 +149,23 @@ function Dashboard() {
           </p>
         </div>
 
-        <button
-          type="button"
-          className="dashboard-refresh"
-          onClick={cargarDashboard}
-        >
-          ↻ Actualizar
-        </button>
+        <div className="dashboard-top-actions">
+          <button
+            type="button"
+            className="dashboard-home"
+            onClick={() => navigate("/")}
+          >
+            ⌂ Ir al Home
+          </button>
+
+          <button
+            type="button"
+            className="dashboard-refresh"
+            onClick={cargarDashboard}
+          >
+            ↻ Actualizar
+          </button>
+        </div>
 
       </div>
 
