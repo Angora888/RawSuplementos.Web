@@ -57,7 +57,7 @@ function Home() {
   };
 
   const pedirPorWhatsApp = (producto) => {
-    const numeroWhatsApp = "50660662375";
+    const numeroWhatsApp = "50672509174";
 
     const detalles = [
       producto.marca,
