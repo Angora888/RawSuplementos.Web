@@ -1,254 +1,72 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../services/api";
-import "../styles/home.css";
-
-const NEGOCIO_SLUG = "raw-suplementos";
+import "../styles/saas-home.css";
 
 function Home() {
   const navigate = useNavigate();
-
-  const [productos, setProductos] = useState([]);
-  const [negocio, setNegocio] = useState(null);
-  const [cargando, setCargando] = useState(true);
-
-  const sesionActiva = Boolean(
-    localStorage.getItem("token") &&
-      localStorage.getItem("usuario")
-  );
-
-  const rutaAdministracion = sesionActiva ? "/dashboard" : "/login";
-  const textoAdministracion = sesionActiva
-    ? "Volver al Dashboard"
-    : "Iniciar sesión";
-
-  const nombreNegocio = negocio?.nombre || "RAW Suplements";
-  const logoNegocio = negocio?.logoUrl || null;
-
-  useEffect(() => {
-    cargarCatalogo();
-  }, []);
-
-  useEffect(() => {
-    const root = document.documentElement;
-
-    if (negocio?.colorPrimario) {
-      root.style.setProperty("--negocio-color-primario", negocio.colorPrimario);
-    } else {
-      root.style.removeProperty("--negocio-color-primario");
-    }
-
-    if (negocio?.colorSecundario) {
-      root.style.setProperty("--negocio-color-secundario", negocio.colorSecundario);
-    } else {
-      root.style.removeProperty("--negocio-color-secundario");
-    }
-
-    return () => {
-      root.style.removeProperty("--negocio-color-primario");
-      root.style.removeProperty("--negocio-color-secundario");
-    };
-  }, [negocio]);
-
-  const cargarCatalogo = async () => {
-    try {
-      setCargando(true);
-
-      const response = await api.get(`/Productos/catalogo/${NEGOCIO_SLUG}`);
-      const data = response.data || {};
-
-      setNegocio(data.negocio || null);
-      setProductos(Array.isArray(data.productos) ? data.productos : []);
-    } catch (error) {
-      console.error("Error cargando catálogo:", error);
-      setNegocio(null);
-      setProductos([]);
-    } finally {
-      setCargando(false);
-    }
-  };
-
-  const moneda = (valor) => {
-    return new Intl.NumberFormat("es-CR", {
-      style: "currency",
-      currency: "CRC",
-      maximumFractionDigits: 0,
-    }).format(valor || 0);
-  };
-
-  const pedirPorWhatsApp = (producto) => {
-    const numeroWhatsApp = (negocio?.whatsApp || "").replace(/\D/g, "");
-
-    if (!numeroWhatsApp) {
-      window.alert("Este negocio todavía no tiene un número de WhatsApp configurado.");
-      return;
-    }
-
-    const detalles = [producto.marca, producto.presentacion, producto.sabor]
-      .filter(Boolean)
-      .join(" · ");
-
-    const mensaje = [
-      `Hola 👋 Quiero pedir este producto de ${nombreNegocio}:`,
-      "",
-      `Producto: ${producto.nombre}`,
-      detalles ? `Detalle: ${detalles}` : null,
-      `Precio: ${moneda(producto.precioVenta)}`,
-      "",
-      "¿Me confirmas disponibilidad, por favor?",
-    ]
-      .filter(Boolean)
-      .join("\n");
-
-    const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
-    window.open(url, "_blank", "noopener,noreferrer");
-  };
-
-  const irCatalogo = () => {
-    document.getElementById("catalogo")?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const irBeneficios = () => {
-    document.getElementById("beneficios")?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const irInicio = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  const sesionActiva = Boolean(localStorage.getItem("token") && localStorage.getItem("usuario"));
 
   return (
-    <div className="home-page">
-      <header className="home-navbar">
-        <div className="home-brand" onClick={irInicio}>
-          <div className="home-brand-logo">
-            {logoNegocio ? (
-              <img src={logoNegocio} alt={nombreNegocio} />
-            ) : (
-              "RAW"
-            )}
-          </div>
-
-          <div>
-            <strong>{nombreNegocio}</strong>
-            <span>SUPLEMENTOS</span>
-          </div>
-        </div>
-
-        <nav className="home-nav-links">
-          <button type="button" onClick={irInicio}>Inicio</button>
-          <button type="button" onClick={irCatalogo}>Catálogo</button>
-          <button type="button" onClick={irBeneficios}>Nosotros</button>
+    <div className="saas-page">
+      <header className="saas-nav">
+        <button className="saas-brand" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
+          <span className="saas-brand-mark">N</span>
+          <span>Negocio Fácil</span>
+        </button>
+        <nav>
+          <button onClick={() => document.getElementById("funciones")?.scrollIntoView({ behavior: "smooth" })}>Funciones</button>
+          <button onClick={() => document.getElementById("beneficios-saas")?.scrollIntoView({ behavior: "smooth" })}>Beneficios</button>
         </nav>
-
-        <button className="home-login-button" onClick={() => navigate(rutaAdministracion)}>
-          {textoAdministracion}
+        <button className="saas-login" onClick={() => navigate(sesionActiva ? "/dashboard" : "/login")}>
+          {sesionActiva ? "Ir al panel" : "Iniciar sesión"}
         </button>
       </header>
 
-      <section className="home-hero">
-        <div className="home-hero-content">
-          <p className="home-eyebrow">SUPLEMENTOS DEPORTIVOS</p>
-
-          <h1>
-            FUERZA REAL.
-            <br />
-            <span>RESULTADOS RAW.</span>
-          </h1>
-
-          <p className="home-hero-description">
-            Encuentra proteínas, creatinas y suplementos seleccionados para llevar tu entrenamiento al siguiente nivel.
-          </p>
-
-          <div className="home-hero-actions">
-            <button className="home-primary-button" onClick={irCatalogo}>Ver catálogo</button>
-            <button className="home-secondary-button" onClick={() => navigate(rutaAdministracion)}>
-              {sesionActiva ? "Volver al Dashboard" : "Administración"}
-            </button>
-          </div>
-
-          <div className="home-hero-features">
-            <div><strong>Productos originales</strong><span>Calidad garantizada</span></div>
-            <div><strong>Atención directa</strong><span>Compra fácil y rápida</span></div>
-            <div><strong>Stock actualizado</strong><span>Consulta disponibilidad</span></div>
-          </div>
-        </div>
-
-        <div className="home-hero-visual">
-          <div className="hero-product-circle">
-            <div className="hero-product-bottle">
-              <span>RAW</span>
-              <strong>WHEY</strong>
-              <small>SUPLEMENTS</small>
+      <main>
+        <section className="saas-hero">
+          <div className="saas-hero-copy">
+            <span className="saas-pill">HECHO PARA PEQUEÑOS NEGOCIOS</span>
+            <h1>Tu negocio organizado.<br /><em>Todo en un solo lugar.</em></h1>
+            <p>Administra ventas, inventario, clientes y cuentas por cobrar sin hojas de cálculo complicadas. Una plataforma sencilla para tener el control de tu negocio desde cualquier lugar.</p>
+            <div className="saas-actions">
+              <button className="saas-primary" onClick={() => navigate("/login")}>Entrar a mi negocio</button>
+              <button className="saas-secondary" onClick={() => document.getElementById("funciones")?.scrollIntoView({ behavior: "smooth" })}>Ver cómo funciona</button>
             </div>
+            <div className="saas-checks"><span>✓ Fácil de usar</span><span>✓ Desde celular o computadora</span><span>✓ Tus datos separados y seguros</span></div>
           </div>
-        </div>
-      </section>
 
-      <section id="catalogo" className="home-catalog">
-        <div className="home-section-header">
-          <div>
-            <p className="home-eyebrow">CATÁLOGO</p>
-            <h2>Nuestros productos</h2>
-            <p>Suplementos disponibles actualmente.</p>
+          <div className="saas-dashboard-preview">
+            <div className="preview-top"><div><small>RESUMEN DE HOY</small><strong>Tu negocio</strong></div><span>● En línea</span></div>
+            <div className="preview-stats">
+              <article><small>Ventas</small><strong>₡125,000</strong><span>Hoy</span></article>
+              <article><small>Por cobrar</small><strong>₡42,500</strong><span>Pendiente</span></article>
+              <article><small>Productos</small><strong>86</strong><span>En inventario</span></article>
+              <article><small>Clientes</small><strong>124</strong><span>Registrados</span></article>
+            </div>
+            <div className="preview-chart"><div><strong>Ventas de la semana</strong><small>Todo bajo control</small></div><div className="bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
           </div>
-        </div>
+        </section>
 
-        {cargando ? (
-          <div className="home-loading">Cargando catálogo...</div>
-        ) : productos.length === 0 ? (
-          <div className="home-empty">En este momento no hay productos disponibles.</div>
-        ) : (
-          <div className="home-products-grid">
-            {productos.map((producto) => (
-              <article key={producto.id} className="home-product-card">
-                <div className="home-product-image">
-                  {producto.imageUrl ? (
-                    <img src={producto.imageUrl} alt={producto.nombre} />
-                  ) : (
-                    <div className="home-product-placeholder">RAW</div>
-                  )}
-                </div>
-
-                <div className="home-product-content">
-                  <span className="home-product-category">{producto.categoria}</span>
-                  <h3>{producto.nombre}</h3>
-                  <p>
-                    {producto.marca || nombreNegocio}
-                    {producto.presentacion ? ` · ${producto.presentacion}` : ""}
-                    {producto.sabor ? ` · ${producto.sabor}` : ""}
-                  </p>
-
-                  <div className="home-product-footer">
-                    <strong>{moneda(producto.precioVenta)}</strong>
-                    <div className="home-product-order-actions">
-                      <span>{producto.disponible === false ? "Agotado" : "Disponible"}</span>
-                      {producto.disponible !== false && (
-                        <button type="button" className="home-order-button" onClick={() => pedirPorWhatsApp(producto)}>
-                          Pedir
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </article>
-            ))}
+        <section id="funciones" className="saas-section">
+          <div className="saas-section-title"><span>MENOS PAPELEO. MÁS CONTROL.</span><h2>Todo lo que necesitas para manejar tu negocio</h2><p>Información clara para saber qué vendes, qué tienes y qué te deben.</p></div>
+          <div className="saas-feature-grid">
+            <article><b>01</b><div className="feature-icon">▣</div><h3>Ventas</h3><p>Registra tus ventas, pagos y movimientos sin perder tiempo.</p></article>
+            <article><b>02</b><div className="feature-icon">▤</div><h3>Inventario</h3><p>Conoce tus existencias y detecta productos con poco stock.</p></article>
+            <article><b>03</b><div className="feature-icon">◎</div><h3>Clientes</h3><p>Mantén la información de tus clientes organizada y disponible.</p></article>
+            <article><b>04</b><div className="feature-icon">₡</div><h3>Cuentas por cobrar</h3><p>Visualiza saldos pendientes, abonos y deudas por cliente.</p></article>
+            <article><b>05</b><div className="feature-icon">↗</div><h3>Dashboard</h3><p>Revisa de un vistazo ventas, ganancias y datos importantes.</p></article>
+            <article><b>06</b><div className="feature-icon">◉</div><h3>Catálogo público</h3><p>Comparte tus productos en línea y recibe pedidos por WhatsApp.</p></article>
           </div>
-        )}
-      </section>
+        </section>
 
-      <section id="beneficios" className="home-benefits">
-        <div className="home-benefit-card"><strong>Calidad</strong><p>Suplementos seleccionados para acompañar tus objetivos.</p></div>
-        <div className="home-benefit-card"><strong>Confianza</strong><p>Información clara de precios y disponibilidad.</p></div>
-        <div className="home-benefit-card"><strong>Atención</strong><p>Servicio personalizado y comunicación directa.</p></div>
-      </section>
+        <section id="beneficios-saas" className="saas-benefits">
+          <div><span className="saas-pill">TU NEGOCIO VA CONTIGO</span><h2>Menos tiempo administrando.<br />Más tiempo haciendo crecer tu negocio.</h2><p>No necesitas ser experto en sistemas. Entra, registra tus movimientos y consulta la información que necesitas.</p></div>
+          <div className="benefit-list"><article><strong>Información centralizada</strong><span>Deja de buscar datos entre cuadernos, chats y hojas de cálculo.</span></article><article><strong>Acceso desde cualquier lugar</strong><span>Consulta tu negocio desde el celular, tablet o computadora.</span></article><article><strong>Un espacio para cada negocio</strong><span>Cada empresa trabaja con sus propios usuarios, clientes, productos y ventas.</span></article></div>
+        </section>
 
-      <footer className="home-footer">
-        <div>
-          <strong>{nombreNegocio}</strong>
-          <span>Entrena fuerte. Vive RAW.</span>
-        </div>
-        <button type="button" onClick={() => navigate(rutaAdministracion)}>{textoAdministracion}</button>
-      </footer>
+        <section className="saas-cta"><span>¿LISTO PARA ORGANIZAR TU NEGOCIO?</span><h2>Empieza a tener el control desde hoy.</h2><p>Una herramienta sencilla creada para el día a día de pequeños negocios.</p><button onClick={() => navigate("/login")}>Iniciar sesión</button></section>
+      </main>
+
+      <footer className="saas-footer"><div><strong>Negocio Fácil</strong><span>Gestión simple para pequeños negocios.</span></div><span>Ventas · Inventario · Clientes · Cuentas por cobrar</span></footer>
     </div>
   );
 }
