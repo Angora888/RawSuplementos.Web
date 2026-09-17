@@ -4,15 +4,15 @@ import "../styles/saas-home.css";
 function Home() {
   const navigate = useNavigate();
   const sesionActiva = Boolean(localStorage.getItem("token") && localStorage.getItem("usuario"));
-  const whatsappUrl = "https://wa.me/50660662375?text=" + encodeURIComponent("Hola 👋 Me interesa Negocio Fácil y quisiera obtener la app para mi negocio.");
+  const whatsappUrl = "https://wa.me/50660662375?text=" + encodeURIComponent("Hola 👋 Me interesa Mi Emprendimiento y quisiera obtener la app para mi negocio.");
   const contactarWhatsApp = () => window.open(whatsappUrl, "_blank", "noopener,noreferrer");
 
   return (
     <div className="saas-page">
       <header className="saas-nav">
         <button className="saas-brand" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
-          <span className="saas-brand-mark">N</span>
-          <span>Negocio Fácil</span>
+          <span className="saas-brand-mark">M</span>
+          <span>Mi Emprendimiento</span>
         </button>
         <nav>
           <button onClick={() => document.getElementById("funciones")?.scrollIntoView({ behavior: "smooth" })}>Funciones</button>
@@ -27,11 +27,11 @@ function Home() {
       <main>
         <section className="saas-hero">
           <div className="saas-hero-copy">
-            <span className="saas-pill">HECHO PARA PEQUEÑOS NEGOCIOS</span>
+            <span className="saas-pill">PENSADO PARA PEQUEÑOS NEGOCIOS</span>
             <h1>Tu negocio organizado.<br /><em>Todo en un solo lugar.</em></h1>
             <p>Administra ventas, inventario, clientes y cuentas por cobrar sin hojas de cálculo complicadas. Una plataforma sencilla para tener el control de tu negocio desde cualquier lugar.</p>
             <div className="saas-actions">
-              <button className="saas-whatsapp" onClick={contactarWhatsApp}><span>●</span> Quiero Negocio Fácil</button>
+              <button className="saas-whatsapp" onClick={contactarWhatsApp}><span>●</span> Quiero Mi Emprendimiento</button>
               <button className="saas-secondary" onClick={() => document.getElementById("funciones")?.scrollIntoView({ behavior: "smooth" })}>Ver cómo funciona</button>
             </div>
             <div className="saas-checks"><span>✓ Fácil de usar</span><span>✓ Desde celular o computadora</span><span>✓ Tus datos separados y seguros</span></div>
@@ -66,12 +66,12 @@ function Home() {
           <div className="benefit-list"><article><strong>Información centralizada</strong><span>Deja de buscar datos entre cuadernos, chats y hojas de cálculo.</span></article><article><strong>Acceso desde cualquier lugar</strong><span>Consulta tu negocio desde el celular, tablet o computadora.</span></article><article><strong>Un espacio para cada negocio</strong><span>Cada empresa trabaja con sus propios usuarios, clientes, productos y ventas.</span></article></div>
         </section>
 
-        <section className="saas-cta"><span>¿LISTO PARA ORGANIZAR TU NEGOCIO?</span><h2>Empieza a tener el control desde hoy.</h2><p>Escríbeme por WhatsApp y te ayudo a poner Negocio Fácil a trabajar para tu negocio.</p><button className="saas-whatsapp" onClick={contactarWhatsApp}><span>●</span> Contactar por WhatsApp</button></section>
+        <section className="saas-cta"><span>¿LISTO PARA ORGANIZAR TU NEGOCIO?</span><h2>Empieza a tener el control desde hoy.</h2><p>Escríbeme por WhatsApp y te ayudo a poner Mi Emprendimiento a trabajar para tu negocio.</p><button className="saas-whatsapp" onClick={contactarWhatsApp}><span>●</span> Contactar por WhatsApp</button></section>
       </main>
 
       <button className="saas-whatsapp-float" onClick={contactarWhatsApp} aria-label="Contactar por WhatsApp">WA</button>
 
-      <footer className="saas-footer"><div><strong>Negocio Fácil</strong><span>Gestión simple para pequeños negocios.</span></div><span>Ventas · Inventario · Clientes · Cuentas por cobrar</span></footer>
+      <footer className="saas-footer"><div><strong>Mi Emprendimiento</strong><span>Gestión simple para pequeños negocios.</span></div><span>Ventas · Inventario · Clientes · Cuentas por cobrar</span></footer>
     </div>
   );
 }
