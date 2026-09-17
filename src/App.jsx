@@ -9,6 +9,7 @@ import Home from "./pages/Home";
 import CatalogoPublico from "./pages/CatalogoPublico";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import SuperAdmin from "./pages/SuperAdmin";
 
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -30,6 +31,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/catalogo/:slug" element={<CatalogoPublico />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/superadmin" element={<SuperAdmin />} />
 
         <Route
           element={
