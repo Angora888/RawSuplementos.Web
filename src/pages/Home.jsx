@@ -3,10 +3,13 @@ import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import "../styles/home.css";
 
+const NEGOCIO_SLUG = "raw-suplementos";
+
 function Home() {
   const navigate = useNavigate();
 
   const [productos, setProductos] = useState([]);
+  const [negocio, setNegocio] = useState(null);
   const [cargando, setCargando] = useState(true);
 
   const sesionActiva = Boolean(
@@ -14,34 +17,51 @@ function Home() {
       localStorage.getItem("usuario")
   );
 
-  const rutaAdministracion = sesionActiva
-    ? "/dashboard"
-    : "/login";
-
+  const rutaAdministracion = sesionActiva ? "/dashboard" : "/login";
   const textoAdministracion = sesionActiva
     ? "Volver al Dashboard"
     : "Iniciar sesión";
 
+  const nombreNegocio = negocio?.nombre || "RAW Suplements";
+  const logoNegocio = negocio?.logoUrl || null;
+
   useEffect(() => {
-    cargarProductos();
+    cargarCatalogo();
   }, []);
 
-  const cargarProductos = async () => {
+  useEffect(() => {
+    const root = document.documentElement;
+
+    if (negocio?.colorPrimario) {
+      root.style.setProperty("--negocio-color-primario", negocio.colorPrimario);
+    } else {
+      root.style.removeProperty("--negocio-color-primario");
+    }
+
+    if (negocio?.colorSecundario) {
+      root.style.setProperty("--negocio-color-secundario", negocio.colorSecundario);
+    } else {
+      root.style.removeProperty("--negocio-color-secundario");
+    }
+
+    return () => {
+      root.style.removeProperty("--negocio-color-primario");
+      root.style.removeProperty("--negocio-color-secundario");
+    };
+  }, [negocio]);
+
+  const cargarCatalogo = async () => {
     try {
       setCargando(true);
 
-      const response =
-        await api.get("/Productos/catalogo");
+      const response = await api.get(`/Productos/catalogo/${NEGOCIO_SLUG}`);
+      const data = response.data || {};
 
-      setProductos(
-        response.data || []
-      );
+      setNegocio(data.negocio || null);
+      setProductos(Array.isArray(data.productos) ? data.productos : []);
     } catch (error) {
-      console.error(
-        "Error cargando catálogo:",
-        error
-      );
-
+      console.error("Error cargando catálogo:", error);
+      setNegocio(null);
       setProductos([]);
     } finally {
       setCargando(false);
@@ -57,18 +77,19 @@ function Home() {
   };
 
   const pedirPorWhatsApp = (producto) => {
-    const numeroWhatsApp = "50672509174";
+    const numeroWhatsApp = (negocio?.whatsApp || "").replace(/\D/g, "");
 
-    const detalles = [
-      producto.marca,
-      producto.presentacion,
-      producto.sabor,
-    ]
+    if (!numeroWhatsApp) {
+      window.alert("Este negocio todavía no tiene un número de WhatsApp configurado.");
+      return;
+    }
+
+    const detalles = [producto.marca, producto.presentacion, producto.sabor]
       .filter(Boolean)
       .join(" · ");
 
     const mensaje = [
-      "Hola 👋 Quiero pedir este producto de RAW Suplements:",
+      `Hola 👋 Quiero pedir este producto de ${nombreNegocio}:`,
       "",
       `Producto: ${producto.nombre}`,
       detalles ? `Detalle: ${detalles}` : null,
@@ -79,80 +100,54 @@ function Home() {
       .filter(Boolean)
       .join("\n");
 
-    const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(
-      mensaje
-    )}`;
-
+    const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
   const irCatalogo = () => {
-    document
-      .getElementById("catalogo")
-      ?.scrollIntoView({
-        behavior: "smooth",
-      });
+    document.getElementById("catalogo")?.scrollIntoView({ behavior: "smooth" });
   };
 
   const irBeneficios = () => {
-    document
-      .getElementById("beneficios")
-      ?.scrollIntoView({
-        behavior: "smooth",
-      });
+    document.getElementById("beneficios")?.scrollIntoView({ behavior: "smooth" });
   };
 
   const irInicio = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
     <div className="home-page">
       <header className="home-navbar">
-        <div
-          className="home-brand"
-          onClick={irInicio}
-        >
+        <div className="home-brand" onClick={irInicio}>
           <div className="home-brand-logo">
-            RAW
+            {logoNegocio ? (
+              <img src={logoNegocio} alt={nombreNegocio} />
+            ) : (
+              "RAW"
+            )}
           </div>
 
           <div>
-            <strong>RAW</strong>
-            <span>SUPLEMENTS</span>
+            <strong>{nombreNegocio}</strong>
+            <span>SUPLEMENTOS</span>
           </div>
         </div>
 
         <nav className="home-nav-links">
-          <button type="button" onClick={irInicio}>
-            Inicio
-          </button>
-
-          <button type="button" onClick={irCatalogo}>
-            Catálogo
-          </button>
-
-          <button type="button" onClick={irBeneficios}>
-            Nosotros
-          </button>
+          <button type="button" onClick={irInicio}>Inicio</button>
+          <button type="button" onClick={irCatalogo}>Catálogo</button>
+          <button type="button" onClick={irBeneficios}>Nosotros</button>
         </nav>
 
-        <button
-          className="home-login-button"
-          onClick={() => navigate(rutaAdministracion)}
-        >
+        <button className="home-login-button" onClick={() => navigate(rutaAdministracion)}>
           {textoAdministracion}
         </button>
       </header>
 
       <section className="home-hero">
         <div className="home-hero-content">
-          <p className="home-eyebrow">
-            SUPLEMENTOS DEPORTIVOS
-          </p>
+          <p className="home-eyebrow">SUPLEMENTOS DEPORTIVOS</p>
 
           <h1>
             FUERZA REAL.
@@ -161,45 +156,20 @@ function Home() {
           </h1>
 
           <p className="home-hero-description">
-            Encuentra proteínas, creatinas
-            y suplementos seleccionados
-            para llevar tu entrenamiento
-            al siguiente nivel.
+            Encuentra proteínas, creatinas y suplementos seleccionados para llevar tu entrenamiento al siguiente nivel.
           </p>
 
           <div className="home-hero-actions">
-            <button
-              className="home-primary-button"
-              onClick={irCatalogo}
-            >
-              Ver catálogo
-            </button>
-
-            <button
-              className="home-secondary-button"
-              onClick={() => navigate(rutaAdministracion)}
-            >
-              {sesionActiva
-                ? "Volver al Dashboard"
-                : "Administración"}
+            <button className="home-primary-button" onClick={irCatalogo}>Ver catálogo</button>
+            <button className="home-secondary-button" onClick={() => navigate(rutaAdministracion)}>
+              {sesionActiva ? "Volver al Dashboard" : "Administración"}
             </button>
           </div>
 
           <div className="home-hero-features">
-            <div>
-              <strong>Productos originales</strong>
-              <span>Calidad garantizada</span>
-            </div>
-
-            <div>
-              <strong>Atención directa</strong>
-              <span>Compra fácil y rápida</span>
-            </div>
-
-            <div>
-              <strong>Stock actualizado</strong>
-              <span>Consulta disponibilidad</span>
-            </div>
+            <div><strong>Productos originales</strong><span>Calidad garantizada</span></div>
+            <div><strong>Atención directa</strong><span>Compra fácil y rápida</span></div>
+            <div><strong>Stock actualizado</strong><span>Consulta disponibilidad</span></div>
           </div>
         </div>
 
@@ -214,86 +184,49 @@ function Home() {
         </div>
       </section>
 
-      <section
-        id="catalogo"
-        className="home-catalog"
-      >
+      <section id="catalogo" className="home-catalog">
         <div className="home-section-header">
           <div>
-            <p className="home-eyebrow">
-              CATÁLOGO
-            </p>
-
+            <p className="home-eyebrow">CATÁLOGO</p>
             <h2>Nuestros productos</h2>
-
-            <p>
-              Suplementos disponibles
-              actualmente.
-            </p>
+            <p>Suplementos disponibles actualmente.</p>
           </div>
         </div>
 
         {cargando ? (
-          <div className="home-loading">
-            Cargando catálogo...
-          </div>
+          <div className="home-loading">Cargando catálogo...</div>
         ) : productos.length === 0 ? (
-          <div className="home-empty">
-            En este momento no hay productos
-            disponibles.
-          </div>
+          <div className="home-empty">En este momento no hay productos disponibles.</div>
         ) : (
           <div className="home-products-grid">
             {productos.map((producto) => (
-              <article
-                key={producto.id}
-                className="home-product-card"
-              >
+              <article key={producto.id} className="home-product-card">
                 <div className="home-product-image">
                   {producto.imageUrl ? (
-                    <img
-                      src={producto.imageUrl}
-                      alt={producto.nombre}
-                    />
+                    <img src={producto.imageUrl} alt={producto.nombre} />
                   ) : (
-                    <div className="home-product-placeholder">
-                      RAW
-                    </div>
+                    <div className="home-product-placeholder">RAW</div>
                   )}
                 </div>
 
                 <div className="home-product-content">
-                  <span className="home-product-category">
-                    {producto.categoria}
-                  </span>
-
+                  <span className="home-product-category">{producto.categoria}</span>
                   <h3>{producto.nombre}</h3>
-
                   <p>
-                    {producto.marca || "RAW Suplements"}
-                    {producto.presentacion
-                      ? ` · ${producto.presentacion}`
-                      : ""}
-                    {producto.sabor
-                      ? ` · ${producto.sabor}`
-                      : ""}
+                    {producto.marca || nombreNegocio}
+                    {producto.presentacion ? ` · ${producto.presentacion}` : ""}
+                    {producto.sabor ? ` · ${producto.sabor}` : ""}
                   </p>
 
                   <div className="home-product-footer">
-                    <strong>
-                      {moneda(producto.precioVenta)}
-                    </strong>
-
+                    <strong>{moneda(producto.precioVenta)}</strong>
                     <div className="home-product-order-actions">
-                      <span>Disponible</span>
-
-                      <button
-                        type="button"
-                        className="home-order-button"
-                        onClick={() => pedirPorWhatsApp(producto)}
-                      >
-                        Pedir
-                      </button>
+                      <span>{producto.disponible === false ? "Agotado" : "Disponible"}</span>
+                      {producto.disponible !== false && (
+                        <button type="button" className="home-order-button" onClick={() => pedirPorWhatsApp(producto)}>
+                          Pedir
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -303,47 +236,18 @@ function Home() {
         )}
       </section>
 
-      <section
-        id="beneficios"
-        className="home-benefits"
-      >
-        <div className="home-benefit-card">
-          <strong>Calidad</strong>
-          <p>
-            Suplementos seleccionados para
-            acompañar tus objetivos.
-          </p>
-        </div>
-
-        <div className="home-benefit-card">
-          <strong>Confianza</strong>
-          <p>
-            Información clara de precios
-            y disponibilidad.
-          </p>
-        </div>
-
-        <div className="home-benefit-card">
-          <strong>Atención</strong>
-          <p>
-            Servicio personalizado y
-            comunicación directa.
-          </p>
-        </div>
+      <section id="beneficios" className="home-benefits">
+        <div className="home-benefit-card"><strong>Calidad</strong><p>Suplementos seleccionados para acompañar tus objetivos.</p></div>
+        <div className="home-benefit-card"><strong>Confianza</strong><p>Información clara de precios y disponibilidad.</p></div>
+        <div className="home-benefit-card"><strong>Atención</strong><p>Servicio personalizado y comunicación directa.</p></div>
       </section>
 
       <footer className="home-footer">
         <div>
-          <strong>RAW Suplements</strong>
+          <strong>{nombreNegocio}</strong>
           <span>Entrena fuerte. Vive RAW.</span>
         </div>
-
-        <button
-          type="button"
-          onClick={() => navigate(rutaAdministracion)}
-        >
-          {textoAdministracion}
-        </button>
+        <button type="button" onClick={() => navigate(rutaAdministracion)}>{textoAdministracion}</button>
       </footer>
     </div>
   );
