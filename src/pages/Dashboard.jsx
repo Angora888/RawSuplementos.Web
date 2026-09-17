@@ -1,159 +1,36 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+import LandingSettings from "../components/LandingSettings";
 import "../styles/dashboard.css";
+import "../styles/landing-settings.css";
 
-function Dashboard() {
-  const navigate = useNavigate();
-  const [datos, setDatos] = useState(null);
-  const [cargando, setCargando] = useState(true);
-  const [error, setError] = useState("");
-  const [copiado, setCopiado] = useState(false);
-
-  const usuario = JSON.parse(localStorage.getItem("usuario") || "{}");
-  const negocio = usuario?.negocio || {};
-  const slug = negocio?.slug || negocio?.Slug || "";
-  const nombreNegocio = negocio?.nombre || negocio?.Nombre || "Mi negocio";
-  const urlCatalogo = slug ? `${window.location.origin}/catalogo/${slug}` : "";
-
-  useEffect(() => {
-    cargarDashboard();
-  }, []);
-
-  const cargarDashboard = async () => {
-    try {
-      setCargando(true);
-      const response = await api.get("/Dashboard");
-      setDatos(response.data);
-      setError("");
-    } catch (error) {
-      console.error(error);
-      setError("No fue posible cargar el dashboard.");
-    } finally {
-      setCargando(false);
-    }
-  };
-
-  const copiarCatalogo = async () => {
-    if (!urlCatalogo) return;
-    try {
-      await navigator.clipboard.writeText(urlCatalogo);
-      setCopiado(true);
-      setTimeout(() => setCopiado(false), 2200);
-    } catch {
-      window.prompt("Copia el enlace de tu catálogo:", urlCatalogo);
-    }
-  };
-
-  const compartirCatalogo = async () => {
-    if (!urlCatalogo) return;
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: `Catálogo de ${nombreNegocio}`,
-          text: `Mira el catálogo de ${nombreNegocio}`,
-          url: urlCatalogo,
-        });
-        return;
-      } catch (error) {
-        if (error?.name === "AbortError") return;
-      }
-    }
-    await copiarCatalogo();
-  };
-
-  const abrirCatalogo = () => {
-    if (urlCatalogo) window.open(urlCatalogo, "_blank", "noopener,noreferrer");
-  };
-
-  const moneda = (valor) => new Intl.NumberFormat("es-CR", { style: "currency", currency: "CRC", maximumFractionDigits: 0 }).format(valor || 0);
-  const plural = (cantidad, singular, pluralTexto) => cantidad === 1 ? singular : pluralTexto;
-
-  if (cargando) return <div className="page-container"><div className="dashboard-loading">Cargando dashboard...</div></div>;
-  if (error) return <div className="page-container"><div className="dashboard-error">{error}</div></div>;
-
-  const ventasHoy = datos?.ventas?.hoy || 0;
-  const cantidadVentasHoy = datos?.ventas?.cantidadHoy || 0;
-  const ventasMes = datos?.ventas?.mes || 0;
-  const cantidadVentasMes = datos?.ventas?.cantidadMes || 0;
-  const gananciaHoy = datos?.ganancias?.hoy || 0;
-  const gananciaMes = datos?.ganancias?.mes || 0;
-  const pagosHoy = datos?.pagos?.hoy || 0;
-  const cantidadPagosHoy = datos?.pagos?.cantidadHoy || 0;
-  const totalPorCobrar = datos?.cuentasPorCobrar?.total || 0;
-  const clientesConDeuda = datos?.cuentasPorCobrar?.clientesConDeuda || 0;
-  const ventasPendientes = datos?.cuentasPorCobrar?.ventasPendientes || 0;
-  const ventasVencidas = datos?.cuentasPorCobrar?.ventasVencidas || 0;
-  const vencenHoy = datos?.cuentasPorCobrar?.vencenHoy || 0;
-  const stockBajo = datos?.inventario?.stockBajo || 0;
-  const sinStock = datos?.inventario?.sinStock || 0;
-  const totalClientes = datos?.clientes?.total || 0;
-
-  return (
-    <div className="page-container dashboard-page">
-      <div className="dashboard-top">
-        <div>
-          <p className="dashboard-eyebrow">RESUMEN GENERAL</p>
-          <h1>Dashboard</h1>
-          <p className="dashboard-subtitle">Estado actual de {nombreNegocio}</p>
-        </div>
-        <div className="dashboard-top-actions">
-          <button type="button" className="dashboard-home" onClick={() => navigate("/")}>⌂ Ir al Home</button>
-          <button type="button" className="dashboard-refresh" onClick={cargarDashboard}>↻ Actualizar</button>
-        </div>
-      </div>
-
-      {urlCatalogo && (
-        <section className="dashboard-public-page">
-          <div className="dashboard-public-icon">🌐</div>
-          <div className="dashboard-public-content">
-            <div className="dashboard-public-title-row">
-              <div>
-                <span className="dashboard-public-label">TU PÁGINA PARA CLIENTES</span>
-                <h2>Catálogo público</h2>
-              </div>
-              <span className="dashboard-public-status">● Activo</span>
-            </div>
-            <p>Comparte este enlace con tus clientes para que puedan ver tus productos desde cualquier lugar.</p>
-            <div className="dashboard-public-url">{urlCatalogo}</div>
-            <div className="dashboard-public-actions">
-              <button type="button" className="public-copy" onClick={copiarCatalogo}>{copiado ? "✓ Enlace copiado" : "⧉ Copiar enlace"}</button>
-              <button type="button" className="public-share" onClick={compartirCatalogo}>↗ Compartir</button>
-              <button type="button" className="public-open" onClick={abrirCatalogo}>Abrir página ↗</button>
-            </div>
-          </div>
-        </section>
-      )}
-
-      <section className="dashboard-cards-grid">
-        <div className="dashboard-card red"><div className="dashboard-card-header"><div className="dashboard-icon red">🛒</div><span>Ventas hoy</span></div><strong className="dashboard-card-value">{moneda(ventasHoy)}</strong><small>{cantidadVentasHoy} {plural(cantidadVentasHoy,"venta","ventas")}</small><div className="dashboard-card-footer neutral">Actividad del día</div></div>
-        <div className="dashboard-card green"><div className="dashboard-card-header"><div className="dashboard-icon green">↗</div><span>Ganancia hoy</span></div><strong className="dashboard-card-value">{moneda(gananciaHoy)}</strong><small>Ganancia estimada</small><div className="dashboard-card-footer success">Rentabilidad de hoy</div></div>
-        <div className="dashboard-card blue"><div className="dashboard-card-header"><div className="dashboard-icon blue">💳</div><span>Pagos recibidos</span></div><strong className="dashboard-card-value">{moneda(pagosHoy)}</strong><small>{cantidadPagosHoy} {plural(cantidadPagosHoy,"pago","pagos")}</small><div className="dashboard-card-footer info">Cobros registrados hoy</div></div>
-        <div className="dashboard-card red"><div className="dashboard-card-header"><div className="dashboard-icon red">👤</div><span>Por cobrar</span></div><strong className="dashboard-card-value debt-value">{moneda(totalPorCobrar)}</strong><small>{clientesConDeuda} {plural(clientesConDeuda,"cliente","clientes")}</small><div className={totalPorCobrar > 0 ? "dashboard-card-footer danger" : "dashboard-card-footer success"}>{totalPorCobrar > 0 ? "Atención requerida" : "Sin cuentas pendientes"}</div></div>
-        <div className="dashboard-card purple"><div className="dashboard-card-header"><div className="dashboard-icon purple">🛍</div><span>Ventas del mes</span></div><strong className="dashboard-card-value">{moneda(ventasMes)}</strong><small>{cantidadVentasMes} {plural(cantidadVentasMes,"venta","ventas")}</small><div className="dashboard-card-footer purple">Acumulado mensual</div></div>
-        <div className="dashboard-card green"><div className="dashboard-card-header"><div className="dashboard-icon green">💵</div><span>Ganancia del mes</span></div><strong className="dashboard-card-value">{moneda(gananciaMes)}</strong><small>Acumulado mensual</small><div className="dashboard-card-footer success">Ganancia estimada</div></div>
-        <div className="dashboard-card orange"><div className="dashboard-card-header"><div className="dashboard-icon orange">📅</div><span>Ventas vencidas</span></div><strong className="dashboard-card-value overdue-value">{ventasVencidas}</strong><small>{vencenHoy} vencen hoy</small><div className={ventasVencidas > 0 ? "dashboard-card-footer danger" : "dashboard-card-footer success"}>{ventasVencidas > 0 ? "Revisar pendientes" : "Todo al día"}</div></div>
-        <div className="dashboard-card yellow"><div className="dashboard-card-header"><div className="dashboard-icon yellow">📦</div><span>Stock bajo</span></div><strong className="dashboard-card-value">{stockBajo}</strong><small>{sinStock} sin stock</small><div className={stockBajo > 0 ? "dashboard-card-footer warning" : "dashboard-card-footer success"}>{stockBajo > 0 ? "Revisar inventario" : "Inventario saludable"}</div></div>
-      </section>
-
-      <section className="dashboard-bottom-grid">
-        <div className="dashboard-panel">
-          <div className="dashboard-panel-header"><span className="dashboard-panel-icon">◷</span><h2>Resumen rápido</h2></div>
-          <div className="dashboard-summary-list">
-            <div><span>Ventas del mes</span><strong>{moneda(ventasMes)}</strong></div><div><span>Ganancia del mes</span><strong>{moneda(gananciaMes)}</strong></div><div><span>Clientes registrados</span><strong>{totalClientes}</strong></div><div><span>Clientes con deuda</span><strong>{clientesConDeuda}</strong></div><div><span>Ventas pendientes</span><strong>{ventasPendientes}</strong></div><div><span>Productos sin stock</span><strong>{sinStock}</strong></div>
-          </div>
-        </div>
-        <div className="dashboard-panel">
-          <div className="dashboard-panel-header"><span className="dashboard-panel-icon">🔔</span><h2>Alertas</h2></div>
-          <div className="dashboard-alert-list">
-            <div className={clientesConDeuda > 0 ? "dashboard-alert danger" : "dashboard-alert success"}><div><strong>Clientes con deuda</strong><span>{clientesConDeuda > 0 ? `${clientesConDeuda} cliente(s) con cuentas pendientes.` : "No hay clientes con deuda."}</span></div></div>
-            <div className={ventasVencidas > 0 ? "dashboard-alert danger" : "dashboard-alert success"}><div><strong>Ventas vencidas</strong><span>{ventasVencidas > 0 ? `${ventasVencidas} venta(s) requieren seguimiento.` : "No tienes ventas vencidas."}</span></div></div>
-            <div className={stockBajo > 0 ? "dashboard-alert warning" : "dashboard-alert success"}><div><strong>Stock bajo</strong><span>{stockBajo > 0 ? `${stockBajo} producto(s) requieren reposición.` : "No hay productos con stock bajo."}</span></div></div>
-          </div>
-        </div>
-      </section>
-    </div>
-  );
+function Dashboard(){
+ const navigate=useNavigate(); const [datos,setDatos]=useState(null); const [cargando,setCargando]=useState(true); const [error,setError]=useState(""); const [copiado,setCopiado]=useState(false); const [personalizando,setPersonalizando]=useState(false);
+ const usuario=JSON.parse(localStorage.getItem("usuario")||"{}"); const negocio=usuario?.negocio||{}; const slug=negocio?.slug||negocio?.Slug||""; const nombreNegocio=negocio?.nombre||negocio?.Nombre||"Mi negocio"; const urlCatalogo=slug?`${window.location.origin}/catalogo/${slug}`:"";
+ useEffect(()=>{cargarDashboard()},[]);
+ const cargarDashboard=async()=>{try{setCargando(true);const r=await api.get("/Dashboard");setDatos(r.data);setError("")}catch(e){console.error(e);setError("No fue posible cargar el dashboard.")}finally{setCargando(false)}};
+ const copiarCatalogo=async()=>{if(!urlCatalogo)return;try{await navigator.clipboard.writeText(urlCatalogo);setCopiado(true);setTimeout(()=>setCopiado(false),2200)}catch{window.prompt("Copia el enlace de tu catálogo:",urlCatalogo)}};
+ const compartirCatalogo=async()=>{if(!urlCatalogo)return;if(navigator.share){try{await navigator.share({title:`Catálogo de ${nombreNegocio}`,text:`Mira el catálogo de ${nombreNegocio}`,url:urlCatalogo});return}catch(e){if(e?.name==="AbortError")return}}await copiarCatalogo()};
+ const abrirCatalogo=()=>urlCatalogo&&window.open(urlCatalogo,"_blank","noopener,noreferrer");
+ const moneda=v=>new Intl.NumberFormat("es-CR",{style:"currency",currency:"CRC",maximumFractionDigits:0}).format(v||0); const plural=(c,s,p)=>c===1?s:p;
+ if(cargando)return <div className="page-container"><div className="dashboard-loading">Cargando dashboard...</div></div>; if(error)return <div className="page-container"><div className="dashboard-error">{error}</div></div>;
+ const vH=datos?.ventas?.hoy||0,cVH=datos?.ventas?.cantidadHoy||0,vM=datos?.ventas?.mes||0,cVM=datos?.ventas?.cantidadMes||0,gH=datos?.ganancias?.hoy||0,gM=datos?.ganancias?.mes||0,pH=datos?.pagos?.hoy||0,cPH=datos?.pagos?.cantidadHoy||0,cobrar=datos?.cuentasPorCobrar?.total||0,cDeuda=datos?.cuentasPorCobrar?.clientesConDeuda||0,vPend=datos?.cuentasPorCobrar?.ventasPendientes||0,vVenc=datos?.cuentasPorCobrar?.ventasVencidas||0,vHoy=datos?.cuentasPorCobrar?.vencenHoy||0,stock=datos?.inventario?.stockBajo||0,sinStock=datos?.inventario?.sinStock||0,clientes=datos?.clientes?.total||0;
+ const cards=[
+  ["red","🛒","Ventas hoy",moneda(vH),`${cVH} ${plural(cVH,"venta","ventas")}`,"neutral","Actividad del día"],
+  ["green","↗","Ganancia hoy",moneda(gH),"Ganancia estimada","success","Rentabilidad de hoy"],
+  ["blue","💳","Pagos recibidos",moneda(pH),`${cPH} ${plural(cPH,"pago","pagos")}`,"info","Cobros registrados hoy"],
+  ["red","👤","Por cobrar",moneda(cobrar),`${cDeuda} ${plural(cDeuda,"cliente","clientes")}`,cobrar>0?"danger":"success",cobrar>0?"Atención requerida":"Sin cuentas pendientes"],
+  ["purple","🛍","Ventas del mes",moneda(vM),`${cVM} ${plural(cVM,"venta","ventas")}`,"purple","Acumulado mensual"],
+  ["green","💵","Ganancia del mes",moneda(gM),"Acumulado mensual","success","Ganancia estimada"],
+  ["orange","📅","Ventas vencidas",vVenc,`${vHoy} vencen hoy`,vVenc>0?"danger":"success",vVenc>0?"Revisar pendientes":"Todo al día"],
+  ["yellow","📦","Stock bajo",stock,`${sinStock} sin stock`,stock>0?"warning":"success",stock>0?"Revisar inventario":"Inventario saludable"]];
+ return <div className="page-container dashboard-page">
+  <div className="dashboard-top"><div><p className="dashboard-eyebrow">RESUMEN GENERAL</p><h1>Dashboard</h1><p className="dashboard-subtitle">Estado actual de {nombreNegocio}</p></div><div className="dashboard-top-actions"><button className="dashboard-home" onClick={()=>navigate("/")}>⌂ Ir al Home</button><button className="dashboard-refresh" onClick={cargarDashboard}>↻ Actualizar</button></div></div>
+  {urlCatalogo&&<section className="dashboard-public-page"><div className="dashboard-public-icon">🌐</div><div className="dashboard-public-content"><div className="dashboard-public-title-row"><div><span className="dashboard-public-label">TU PÁGINA PARA CLIENTES</span><h2>Catálogo público</h2></div><span className="dashboard-public-status">● Activo</span></div><p>Personaliza tu página y comparte el enlace con tus clientes.</p><div className="dashboard-public-url">{urlCatalogo}</div><div className="dashboard-public-actions"><button className="public-customize" onClick={()=>setPersonalizando(true)}>✦ Personalizar página</button><button className="public-copy" onClick={copiarCatalogo}>{copiado?"✓ Enlace copiado":"⧉ Copiar enlace"}</button><button className="public-share" onClick={compartirCatalogo}>↗ Compartir</button><button className="public-open" onClick={abrirCatalogo}>Abrir página ↗</button></div></div></section>}
+  <section className="dashboard-cards-grid">{cards.map((c,i)=><div key={i} className={`dashboard-card ${c[0]}`}><div className="dashboard-card-header"><div className={`dashboard-icon ${c[0]}`}>{c[1]}</div><span>{c[2]}</span></div><strong className="dashboard-card-value">{c[3]}</strong><small>{c[4]}</small><div className={`dashboard-card-footer ${c[5]}`}>{c[6]}</div></div>)}</section>
+  <section className="dashboard-bottom-grid"><div className="dashboard-panel"><div className="dashboard-panel-header"><span className="dashboard-panel-icon">◷</span><h2>Resumen rápido</h2></div><div className="dashboard-summary-list"><div><span>Ventas del mes</span><strong>{moneda(vM)}</strong></div><div><span>Ganancia del mes</span><strong>{moneda(gM)}</strong></div><div><span>Clientes registrados</span><strong>{clientes}</strong></div><div><span>Clientes con deuda</span><strong>{cDeuda}</strong></div><div><span>Ventas pendientes</span><strong>{vPend}</strong></div><div><span>Productos sin stock</span><strong>{sinStock}</strong></div></div></div><div className="dashboard-panel"><div className="dashboard-panel-header"><span className="dashboard-panel-icon">🔔</span><h2>Alertas</h2></div><div className="dashboard-alert-list"><div className={`dashboard-alert ${cDeuda>0?"danger":"success"}`}><div><strong>Clientes con deuda</strong><span>{cDeuda>0?`${cDeuda} cliente(s) con cuentas pendientes.`:"No hay clientes con deuda."}</span></div></div><div className={`dashboard-alert ${vVenc>0?"danger":"success"}`}><div><strong>Ventas vencidas</strong><span>{vVenc>0?`${vVenc} venta(s) requieren seguimiento.`:"No tienes ventas vencidas."}</span></div></div><div className={`dashboard-alert ${stock>0?"warning":"success"}`}><div><strong>Stock bajo</strong><span>{stock>0?`${stock} producto(s) requieren reposición.`:"No hay productos con stock bajo."}</span></div></div></div></div></section>
+  {personalizando&&<LandingSettings onClose={()=>setPersonalizando(false)} onSaved={()=>{}}/>}
+ </div>
 }
-
 export default Dashboard;
