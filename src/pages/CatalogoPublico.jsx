@@ -68,15 +68,15 @@ function CatalogoPublico() {
         <button className="home-login-button" onClick={() => navigate("/")}>Mi Emprendimiento</button>
       </header>
 
-      <section className={`home-hero ${negocio?.heroFondoUrl ? "tenant-hero-image" : ""}`} style={negocio?.heroFondoUrl ? { backgroundImage: `linear-gradient(rgba(255,255,255,.82), rgba(255,255,255,.82)), url("${negocio.heroFondoUrl}")` } : undefined}>
+      <section className={`home-hero ${negocio?.heroFondoUrl ? "tenant-hero-image" : ""} ${negocio?.heroEstilo === "editorial" ? "tenant-hero-editorial" : ""}`} style={negocio?.heroFondoUrl ? { backgroundImage: `linear-gradient(rgba(255,255,255,.82), rgba(255,255,255,.82)), url("${negocio.heroFondoUrl}")` } : undefined}>
         <div className="home-hero-content">
-          <p className="home-eyebrow">{nombreNegocio.toUpperCase()}</p>
-          <h1>{tituloLanding}</h1>
+          <p className="home-eyebrow">{negocio?.heroEtiqueta || nombreNegocio.toUpperCase()}</p>
+          <h1><span>{tituloLanding}</span>{negocio?.heroTituloResaltado && <strong>{negocio.heroTituloResaltado}</strong>}</h1>
           <p className="home-hero-description">{descripcionLanding}</p>
           <div className="home-hero-actions"><button className="home-primary-button" onClick={() => document.getElementById("catalogo")?.scrollIntoView({ behavior: "smooth" })}>Ver productos</button></div>
         </div>
         <div className="home-hero-visual">
-          <div className="tenant-brand-card">{logoNegocio ? <img src={logoNegocio} alt={nombreNegocio} /> : <div className="tenant-brand-initial">{nombreNegocio.charAt(0).toUpperCase()}</div>}<strong>{nombreNegocio}</strong><span>Catálogo en línea</span></div>
+          {negocio?.heroImagenUrl ? <img className="tenant-hero-product" src={negocio.heroImagenUrl} alt={nombreNegocio} /> : <div className="tenant-brand-card">{logoNegocio ? <img src={logoNegocio} alt={nombreNegocio} /> : <div className="tenant-brand-initial">{nombreNegocio.charAt(0).toUpperCase()}</div>}<strong>{nombreNegocio}</strong><span>Catálogo en línea</span></div>}
         </div>
       </section>
 
