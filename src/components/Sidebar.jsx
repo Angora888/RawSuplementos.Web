@@ -2,6 +2,7 @@ import {
   NavLink,
   useNavigate,
 } from "react-router-dom";
+import { getBusinessIdentity, getStoredUser } from "../utils/session";
 
 function Sidebar({
   menuAbierto,
@@ -9,9 +10,8 @@ function Sidebar({
 }) {
   const navigate = useNavigate();
 
-  const usuario = JSON.parse(
-    localStorage.getItem("usuario") || "{}"
-  );
+  const usuario = getStoredUser();
+  const { nombre: nombreNegocio, logoUrl, iniciales } = getBusinessIdentity();
 
   const cerrarSesion = () => {
     localStorage.removeItem("token");
@@ -38,14 +38,16 @@ function Sidebar({
       <div className="sidebar-brand">
 
         <div className="sidebar-logo">
-          RAW
+          {logoUrl ? (
+            <img src={logoUrl} alt={nombreNegocio} className="sidebar-logo-image" />
+          ) : (
+            iniciales
+          )}
         </div>
 
         <div className="sidebar-brand-text">
 
-          <h2>
-            RAW Suplementos
-          </h2>
+          <h2>{nombreNegocio}</h2>
 
           <span>
             {usuario.nombre ||
