@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+import { formatCRC, getApiErrorMessage } from "../utils/formatters";
 
 function NuevaVenta() {
   const navigate = useNavigate();
@@ -68,13 +69,7 @@ function NuevaVenta() {
     }
   };
 
-  const moneda = (valor) => {
-    return new Intl.NumberFormat("es-CR", {
-      style: "currency",
-      currency: "CRC",
-      maximumFractionDigits: 0,
-    }).format(valor || 0);
-  };
+  const moneda = formatCRC;
 
   const clientesFiltrados = useMemo(() => {
     if (!busquedaCliente.trim()) {
@@ -345,12 +340,7 @@ if (ventaId) {
     } catch (error) {
       console.error(error);
 
-      setError(
-        typeof error.response?.data ===
-        "string"
-          ? error.response.data
-          : "No fue posible registrar la venta."
-      );
+      setError(getApiErrorMessage(error, "No fue posible registrar la venta."));
     } finally {
       setGuardando(false);
     }
@@ -470,7 +460,7 @@ if (ventaId) {
               <h2>2. Productos</h2>
 
               <p>
-                Agrega los suplementos
+                Agrega los productos
                 de la venta.
               </p>
             </div>
