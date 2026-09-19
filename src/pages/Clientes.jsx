@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
+import { formatCRC } from "../utils/formatters";
 
 function Clientes() {
   const [clientes, setClientes] = useState([]);
@@ -115,13 +116,7 @@ function Clientes() {
     }
   };
 
-  const moneda = (valor) => {
-    return new Intl.NumberFormat("es-CR", {
-      style: "currency",
-      currency: "CRC",
-      maximumFractionDigits: 0,
-    }).format(valor || 0);
-  };
+  const moneda = formatCRC;
 
   return (
     <div className="page-container">
