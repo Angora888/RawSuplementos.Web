@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+import { formatCRC } from "../utils/formatters";
 import LandingSettings from "../components/LandingSettings";
 import "../styles/dashboard.css";
 import "../styles/landing-settings.css";
