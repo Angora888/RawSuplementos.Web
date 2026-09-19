@@ -1,0 +1,238 @@
+/* =========================================
+   SHARED FORMS
+========================================= */
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 7px;
+  font-weight: 600;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: white;
+  font-family: inherit;
+  font-size: 15px;
+  outline: none;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #111;
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 18px;
+}
+
+.form-grid-full {
+  grid-column: 1 / -1;
+}
+
+.checkbox-row {
+  display: flex !important;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+}
+
+.checkbox-row input {
+  width: auto;
+}
+
+/* =========================================
+   SHARED PAGE COMPONENTS
+========================================= */
+
+.page-header-actions {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.content-card {
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+}
+
+.search-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.search-row input {
+  flex: 1;
+  padding: 12px 14px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 15px;
+}
+
+.btn-primary-app,
+.btn-dark-app,
+.btn-secondary-app {
+  border: none;
+  border-radius: 9px;
+  padding: 11px 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-primary-app,
+.btn-dark-app {
+  background: #111;
+  color: #fff;
+}
+
+.btn-secondary-app {
+  background: #ececec;
+  color: #333;
+}
+
+.table-action {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 7px 12px;
+  background: white;
+  color: #333;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.table-action:hover {
+  background: #f4f4f4;
+}
+
+.app-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.app-table th {
+  padding: 13px 14px;
+  text-align: left;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #777;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.app-table td {
+  padding: 16px 14px;
+  border-bottom: 1px solid #efefef;
+}
+
+.app-table tbody tr:hover {
+  background: #fafafa;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.text-debt {
+  color: #b42318;
+}
+
+.badge-status {
+  display: inline-block;
+  padding: 5px 9px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.badge-status.active {
+  background: #e8f5e9;
+  color: #267438;
+}
+
+.badge-status.inactive {
+  background: #eee;
+  color: #777;
+}
+
+.empty-state {
+  padding: 50px 20px;
+  text-align: center;
+  color: #888;
+}
+
+/* =========================================
+   SHARED MODALS
+========================================= */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.app-modal {
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 16px;
+  padding: 26px;
+}
+
+.modal-header-app {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.modal-header-app h2 {
+  margin: 0;
+}
+
+.modal-header-app p {
+  margin: 5px 0 0;
+  color: #777;
+}
+
+.modal-close {
+  border: none;
+  background: transparent;
+  font-size: 30px;
+  cursor: pointer;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 25px;
+}
