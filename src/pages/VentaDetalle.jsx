@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../services/api";
+import { formatCRC } from "../utils/formatters";
 
 function VentaDetalle() {
   const { id } = useParams();
@@ -57,13 +58,7 @@ function VentaDetalle() {
     }
   };
 
-  const moneda = (valor) => {
-    return new Intl.NumberFormat("es-CR", {
-      style: "currency",
-      currency: "CRC",
-      maximumFractionDigits: 0,
-    }).format(valor || 0);
-  };
+  const moneda = formatCRC;
 
   const fecha = (valor) => {
     if (!valor) {
