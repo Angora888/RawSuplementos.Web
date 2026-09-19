@@ -36,8 +36,13 @@ function CatalogoPublico() {
     const root = document.documentElement;
     root.style.setProperty("--negocio-color-primario", negocio?.colorPrimario || "#5267df");
     root.style.setProperty("--negocio-color-secundario", negocio?.colorSecundario || "#172033");
+    root.style.setProperty("--negocio-fondo", negocio?.colorFondo || "#f7f9fc");
+    root.style.setProperty("--negocio-header", negocio?.colorHeader || "#ffffff");
+    root.style.setProperty("--negocio-footer", negocio?.colorFooter || "#f7f9fc");
+    root.style.setProperty("--negocio-boton", negocio?.colorBoton || negocio?.colorPrimario || "#5267df");
+    root.style.setProperty("--negocio-texto", negocio?.colorTexto || "#172033");
     if (negocio?.nombre) document.title = `${negocio.nombre} | Catálogo`;
-    return () => { root.style.removeProperty("--negocio-color-primario"); root.style.removeProperty("--negocio-color-secundario"); document.title = "Mi Emprendimiento | Gestión para pequeños negocios"; };
+    return () => { root.style.removeProperty("--negocio-color-primario"); root.style.removeProperty("--negocio-color-secundario"); root.style.removeProperty("--negocio-fondo"); root.style.removeProperty("--negocio-header"); root.style.removeProperty("--negocio-footer"); root.style.removeProperty("--negocio-boton"); root.style.removeProperty("--negocio-texto"); document.title = "Mi Emprendimiento | Gestión para pequeños negocios"; };
   }, [negocio]);
 
   const moneda = (valor) => new Intl.NumberFormat("es-CR", { style: "currency", currency: "CRC", maximumFractionDigits: 0 }).format(valor || 0);
@@ -63,7 +68,7 @@ function CatalogoPublico() {
         <button className="home-login-button" onClick={() => navigate("/")}>Mi Emprendimiento</button>
       </header>
 
-      <section className="home-hero">
+      <section className={`home-hero ${negocio?.heroFondoUrl ? "tenant-hero-image" : ""}`} style={negocio?.heroFondoUrl ? { backgroundImage: `linear-gradient(rgba(255,255,255,.82), rgba(255,255,255,.82)), url("${negocio.heroFondoUrl}")` } : undefined}>
         <div className="home-hero-content">
           <p className="home-eyebrow">{nombreNegocio.toUpperCase()}</p>
           <h1>{tituloLanding}</h1>
@@ -80,7 +85,7 @@ function CatalogoPublico() {
         {cargando ? <div className="home-loading">Cargando catálogo...</div> : productos.length === 0 ? <div className="home-empty">En este momento no hay productos disponibles.</div> : <div className="home-products-grid">{productos.map((producto) => <article key={producto.id} className="home-product-card"><div className="home-product-image">{producto.imageUrl ? <img src={producto.imageUrl} alt={producto.nombre} /> : <div className="home-product-placeholder">{nombreNegocio.charAt(0).toUpperCase()}</div>}</div><div className="home-product-content"><span className="home-product-category">{producto.categoria}</span><h3>{producto.nombre}</h3><p>{producto.marca || nombreNegocio}{producto.presentacion ? ` · ${producto.presentacion}` : ""}{producto.sabor ? ` · ${producto.sabor}` : ""}</p><div className="home-product-footer"><strong>{moneda(producto.precioVenta)}</strong><div className="home-product-order-actions"><span>{producto.disponible === false ? "Agotado" : "Disponible"}</span>{producto.disponible !== false && <button type="button" className="home-order-button" onClick={() => pedirPorWhatsApp(producto)}>Pedir</button>}</div></div></div></article>)}</div>}
       </section>
 
-      <footer className="home-footer"><div><strong>{nombreNegocio}</strong><span>Catálogo en línea</span></div><button type="button" onClick={() => navigate("/")}>Creado con Mi Emprendimiento</button></footer>
+      <footer className="home-footer"><div><strong>{nombreNegocio}</strong><span>{negocio?.textoFooter || "Catálogo en línea"}</span></div><button type="button" onClick={() => navigate("/")}>Creado con Mi Emprendimiento</button></footer>
     </div>
   );
 }
