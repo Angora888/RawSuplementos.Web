@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
-import { formatCRC, getApiErrorMessage } from "../utils/formatters";
+import { getApiErrorMessage } from "../utils/formatters";
 import { SaleCustomerSection, SaleItemsSection, SaleProductSection } from "../components/SaleSections";
+import SaleSummary from "../components/SaleSummary";
 
 function NuevaVenta() {
   const navigate = useNavigate();
@@ -70,7 +71,6 @@ function NuevaVenta() {
     }
   };
 
-  const moneda = formatCRC;
 
   const clientesFiltrados = useMemo(() => {
     if (!busquedaCliente.trim()) {
@@ -330,14 +330,13 @@ function NuevaVenta() {
           payload
         );
 
-const ventaId =
-  response.data?.venta?.id;
+      const ventaId = response.data?.venta?.id;
 
-if (ventaId) {
-  navigate(`/ventas/${ventaId}`);
-} else {
-  navigate("/ventas");
-}
+      if (ventaId) {
+        navigate(`/ventas/${ventaId}`);
+      } else {
+        navigate("/ventas");
+      }
     } catch (error) {
       console.error(error);
 
@@ -408,205 +407,26 @@ if (ventaId) {
 
         </div>
 
-        {/* ========================== */}
-        {/* DERECHA - RESUMEN */}
-        {/* ========================== */}
-
-        <aside className="sale-summary">
-
-          <div className="content-card sale-summary-card">
-
-            <div className="section-heading">
-              <h2>Resumen</h2>
-
-              <p>
-                Totales y forma de pago.
-              </p>
-            </div>
-
-            <div className="sale-total-row">
-              <span>Subtotal</span>
-
-              <strong>
-                {moneda(subtotal)}
-              </strong>
-            </div>
-
-            <div className="form-group">
-              <label>Descuento</label>
-
-              <input
-                type="number"
-                min="0"
-                max={subtotal}
-                value={descuento}
-                onChange={(e) =>
-                  setDescuento(
-                    e.target.value
-                  )
-                }
-                placeholder="0"
-              />
-            </div>
-
-            <div className="sale-total-row sale-total-main">
-              <span>Total</span>
-
-              <strong>
-                {moneda(total)}
-              </strong>
-            </div>
-
-            <hr />
-
-            <div className="form-group">
-              <label>
-                Pago inicial
-              </label>
-
-              <input
-                type="number"
-                min="0"
-                max={total}
-                value={pagoInicial}
-                onChange={(e) =>
-                  setPagoInicial(
-                    e.target.value
-                  )
-                }
-                placeholder="0"
-              />
-            </div>
-
-            <div className="form-group">
-              <label>
-                Método de pago
-              </label>
-
-              <select
-                value={metodoPago}
-                onChange={(e) =>
-                  setMetodoPago(
-                    e.target.value
-                  )
-                }
-              >
-                <option value="Efectivo">
-                  Efectivo
-                </option>
-
-                <option value="SINPE">
-                  SINPE
-                </option>
-
-                <option value="Transferencia">
-                  Transferencia
-                </option>
-
-                <option value="Tarjeta">
-                  Tarjeta
-                </option>
-
-                <option value="Otro">
-                  Otro
-                </option>
-              </select>
-            </div>
-
-            {pagoInicialNumero > 0 && (
-              <div className="form-group">
-                <label>
-                  Referencia
-                </label>
-
-                <input
-                  type="text"
-                  value={referenciaPago}
-                  onChange={(e) =>
-                    setReferenciaPago(
-                      e.target.value
-                    )
-                  }
-                  placeholder="Opcional"
-                />
-              </div>
-            )}
-
-            <div
-              className={
-                quedaDeuda
-                  ? "sale-debt-card debt"
-                  : "sale-debt-card paid"
-              }
-            >
-              <span>
-                {quedaDeuda
-                  ? "Saldo pendiente"
-                  : "Saldo pendiente"}
-              </span>
-
-              <strong>
-                {moneda(pendiente)}
-              </strong>
-
-              <small>
-                {quedaDeuda
-                  ? "La venta quedará a crédito."
-                  : "La venta queda pagada."}
-              </small>
-            </div>
-
-            {quedaDeuda && (
-              <div className="form-group">
-                <label>
-                  Fecha de vencimiento
-                </label>
-
-                <input
-                  type="date"
-                  value={
-                    fechaVencimiento
-                  }
-                  onChange={(e) =>
-                    setFechaVencimiento(
-                      e.target.value
-                    )
-                  }
-                  required
-                />
-              </div>
-            )}
-
-            <div className="form-group">
-              <label>Notas</label>
-
-              <textarea
-                rows="3"
-                value={notas}
-                onChange={(e) =>
-                  setNotas(
-                    e.target.value
-                  )
-                }
-                placeholder="Opcional..."
-              />
-            </div>
-
-            <button
-              type="button"
-              className="btn-primary-app sale-save"
-              onClick={guardarVenta}
-              disabled={guardando}
-            >
-              {guardando
-                ? "Registrando..."
-                : "Registrar venta"}
-            </button>
-
-          </div>
-
-        </aside>
-
+        <SaleSummary
+          subtotal={subtotal}
+          descuento={descuento}
+          onDescuentoChange={setDescuento}
+          total={total}
+          pagoInicial={pagoInicial}
+          onPagoInicialChange={setPagoInicial}
+          metodoPago={metodoPago}
+          onMetodoPagoChange={setMetodoPago}
+          referenciaPago={referenciaPago}
+          onReferenciaPagoChange={setReferenciaPago}
+          pendiente={pendiente}
+          quedaDeuda={quedaDeuda}
+          fechaVencimiento={fechaVencimiento}
+          onFechaVencimientoChange={setFechaVencimiento}
+          notas={notas}
+          onNotasChange={setNotas}
+          guardando={guardando}
+          onGuardar={guardarVenta}
+        />
       </div>
 
     </div>
