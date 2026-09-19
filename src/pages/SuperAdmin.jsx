@@ -110,6 +110,19 @@ function SuperAdmin() {
     }
   };
 
+
+  const cambiarBloqueo = async (negocio) => {
+    try {
+      setError("");
+      setMensaje("");
+      await api.put(`/SuperAdmin/negocios/${negocio.id}/bloqueo`, { bloqueado: !negocio.bloqueado });
+      setMensaje(negocio.bloqueado ? "Bloqueo removido correctamente." : "Negocio bloqueado por pago pendiente.");
+      await cargarNegocios();
+    } catch (e) {
+      setError(e.response?.data || "No fue posible cambiar el bloqueo del negocio.");
+    }
+  };
+
   const cerrarSesion = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("usuario");
@@ -218,6 +231,7 @@ function SuperAdmin() {
                   </div>
 
                   <div className="sa-business-actions">
+                    <label className="sa-block-check"><input type="checkbox" checked={Boolean(negocio.bloqueado)} onChange={() => cambiarBloqueo(negocio)} /> Bloqueado por pago</label>
                     <button onClick={() => window.open(`/catalogo/${negocio.slug}`, "_blank", "noopener,noreferrer")}>Ver catálogo</button>
                     <button className={negocio.activo ? "danger" : "success"} onClick={() => cambiarEstado(negocio)}>{negocio.activo ? "Desactivar" : "Activar"}</button>
                   </div>
