@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
+import { formatCRC, getApiErrorMessage } from "../utils/formatters";
 
 function Productos() {
   const [productos, setProductos] = useState([]);
@@ -27,7 +28,7 @@ function Productos() {
     finally { setCargando(false); }
   };
 
-  const moneda = (valor) => new Intl.NumberFormat("es-CR", { style: "currency", currency: "CRC", maximumFractionDigits: 0 }).format(valor || 0);
+  const moneda = formatCRC;
   const handleChange = (e) => { const { name, value, type, checked } = e.target; setForm((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value })); };
   const limpiarVistaPreviaLocal = () => { if (vistaPrevia?.startsWith("blob:")) URL.revokeObjectURL(vistaPrevia); };
   const limpiarFormulario = () => { limpiarVistaPreviaLocal(); setForm({ nombre: "", marca: "", presentacion: "", sabor: "", precioCompra: "", precioVenta: "", stockMinimo: "", imageUrl: "", categoriaId: "", activo: true }); setArchivoImagen(null); setVistaPrevia(""); setEditandoId(null); };
@@ -51,14 +52,14 @@ function Productos() {
       const payload = { nombre: form.nombre.trim(), marca: form.marca.trim() || null, presentacion: form.presentacion.trim() || null, sabor: form.sabor.trim() || null, precioCompra: Number(form.precioCompra), precioVenta: Number(form.precioVenta), stockMinimo: Number(form.stockMinimo), imageUrl, categoriaId: Number(form.categoriaId) };
       if (editandoId) await api.put(`/Productos/${editandoId}`, { ...payload, activo: form.activo }); else await api.post("/Productos", payload);
       setMostrarFormulario(false); limpiarFormulario(); await cargarDatos();
-    } catch (error) { console.error(error); const data = error.response?.data; setError(typeof data === "string" ? data : data?.title || "No fue posible guardar el producto."); }
+    } catch (error) { console.error(error); setError(getApiErrorMessage(error, "No fue posible guardar el producto.")); }
     finally { setGuardando(false); }
   };
 
   const crearCategoria = async (e) => {
     e.preventDefault(); if (!nombreCategoria.trim()) return;
     try { setError(""); const response = await api.post("/Categorias", { nombre: nombreCategoria.trim() }); const nuevaCategoria = response.data; setCategorias((prev) => [...prev, nuevaCategoria]); setForm((prev) => ({ ...prev, categoriaId: nuevaCategoria.id })); setNombreCategoria(""); setMostrarCategoria(false); }
-    catch (error) { console.error(error); setError(typeof error.response?.data === "string" ? error.response.data : "No fue posible crear la categoría."); }
+    catch (error) { console.error(error); setError(getApiErrorMessage(error, "No fue posible crear la categoría.")); }
   };
 
   const cerrarModal = () => { setMostrarFormulario(false); limpiarFormulario(); };
