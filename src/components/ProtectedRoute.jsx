@@ -1,14 +1,38 @@
+import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-import { getStoredBusiness } from "../utils/session";
+import api from "../services/api";
+import { getStoredBusiness, getStoredUser } from "../utils/session";
 
 const ADMIN_WHATSAPP = "50660662375";
 
 function ProtectedRoute({ children }) {
   const token = localStorage.getItem("token");
-  if (!token) return <Navigate to="/login" replace />;
+  const [verificando, setVerificando] = useState(Boolean(token));
+  const [bloqueado, setBloqueado] = useState(() => {
+    const negocio = getStoredBusiness();
+    return negocio?.bloqueado ?? negocio?.Bloqueado ?? false;
+  });
 
-  const negocio = getStoredBusiness();
-  const bloqueado = negocio?.bloqueado ?? negocio?.Bloqueado ?? false;
+  useEffect(() => {
+    if (!token) return;
+    let activo = true;
+
+    api.get("/Auth/sesion")
+      .then(({ data }) => {
+        if (!activo) return;
+        const negocio = data?.negocio || {};
+        const usuario = getStoredUser();
+        localStorage.setItem("usuario", JSON.stringify({ ...usuario, negocio }));
+        setBloqueado(Boolean(negocio.bloqueado ?? negocio.Bloqueado));
+      })
+      .catch(() => {})
+      .finally(() => activo && setVerificando(false));
+
+    return () => { activo = false; };
+  }, [token]);
+
+  if (!token) return <Navigate to="/login" replace />;
+  if (verificando) return <div className="business-blocked-page"><div className="business-blocked-card"><p>Verificando acceso...</p></div></div>;
 
   if (bloqueado) {
     const mensaje = encodeURIComponent("Hola, tengo un pago pendiente de Mi Emprendimiento y deseo habilitar nuevamente mi negocio.");
