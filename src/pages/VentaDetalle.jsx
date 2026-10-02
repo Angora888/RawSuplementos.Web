@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../services/api";
-import { formatCRC } from "../utils/formatters";
+import { formatCRC, formatDate, formatDateTime, getApiErrorMessage, getSaleStatusClass } from "../utils/formatters";
 
 function VentaDetalle() {
   const { id } = useParams();
@@ -48,59 +48,13 @@ function VentaDetalle() {
     } catch (error) {
       console.error(error);
 
-      setError(
-        typeof error.response?.data === "string"
-          ? error.response.data
-          : "No fue posible cargar la venta."
-      );
+      setError(getApiErrorMessage(error, "No fue posible cargar la venta."));
     } finally {
       setCargando(false);
     }
   };
 
-  const moneda = formatCRC;
-
-  const fecha = (valor) => {
-    if (!valor) {
-      return "-";
-    }
-
-    return new Date(valor).toLocaleString("es-CR", {
-      dateStyle: "medium",
-      timeStyle: "short",
-    });
-  };
-
-  const fechaSoloDia = (valor) => {
-    if (!valor) {
-      return "-";
-    }
-
-    return new Date(valor).toLocaleDateString("es-CR", {
-      dateStyle: "medium",
-    });
-  };
-
-  const obtenerClaseEstado = (estado) => {
-    switch (estado?.toLowerCase()) {
-      case "pagada":
-        return "paid";
-
-      case "parcial":
-        return "partial";
-
-      case "pendiente":
-        return "pending";
-
-      case "anulada":
-        return "cancelled";
-
-      default:
-        return "";
-    }
-  };
-
-  const handleAbono = (e) => {
+  const moneda = formatCRC;\n  const fecha = formatDateTime;\n  const fechaSoloDia = formatDate;\n  const obtenerClaseEstado = getSaleStatusClass;\n\n  const handleAbono = (e) => {
     const { name, value } = e.target;
 
     setAbono((prev) => ({
@@ -164,12 +118,7 @@ function VentaDetalle() {
     } catch (error) {
       console.error(error);
 
-      setError(
-        typeof error.response?.data === "string"
-          ? error.response.data
-          : error.response?.data?.mensaje ||
-            "No fue posible registrar el abono."
-      );
+      setError(getApiErrorMessage(error, "No fue posible registrar el abono."));
     } finally {
       setGuardando(false);
     }
@@ -202,12 +151,7 @@ function VentaDetalle() {
     } catch (error) {
       console.error(error);
 
-      setError(
-        typeof error.response?.data === "string"
-          ? error.response.data
-          : error.response?.data?.mensaje ||
-            "No fue posible anular la venta."
-      );
+      setError(getApiErrorMessage(error, "No fue posible anular la venta."));
     } finally {
       setGuardando(false);
     }
