@@ -425,6 +425,7 @@ function NuevaVenta() {
           notas={notas}
           onNotasChange={setNotas}
           guardando={guardando}
+          error={error}
           onGuardar={guardarVenta}
         />
       </div>
