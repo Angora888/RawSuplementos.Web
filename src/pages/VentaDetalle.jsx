@@ -54,7 +54,12 @@ function VentaDetalle() {
     }
   };
 
-  const moneda = formatCRC;\n  const fecha = formatDateTime;\n  const fechaSoloDia = formatDate;\n  const obtenerClaseEstado = getSaleStatusClass;\n\n  const handleAbono = (e) => {
+  const moneda = formatCRC;
+  const fecha = formatDateTime;
+  const fechaSoloDia = formatDate;
+  const obtenerClaseEstado = getSaleStatusClass;
+
+  const handleAbono = (e) => {
     const { name, value } = e.target;
 
     setAbono((prev) => ({
