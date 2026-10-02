@@ -1,0 +1,22 @@
+name: Debug current frontend build
+
+on:
+  push:
+    branches:
+      - chore/debug-current-build
+    paths:
+      - .github/workflows/debug-build.yml
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: chore/debug-current-build
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
