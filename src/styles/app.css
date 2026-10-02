@@ -6,7 +6,8 @@
 @import "./ventaDetalle.css";
 @import "./cuentasPorCobrar.css";
 @import "./usuarios.css";
-@import "./shared.css";\n@import "./business-blocked.css";
+@import "./shared.css";
+@import "./business-blocked.css";
 
 * {
   box-sizing: border-box;
@@ -269,4 +270,3 @@ body {
     grid-column: auto;
   }
 }
-
