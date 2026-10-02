@@ -1,0 +1,42 @@
+/* Business payment block */
+
+.business-blocked-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #f8fafc;
+}
+
+.business-blocked-card {
+  width: min(520px, 100%);
+  padding: 36px;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.12);
+  text-align: center;
+}
+
+.business-blocked-icon {
+  margin-bottom: 12px;
+  font-size: 42px;
+}
+
+.business-blocked-card h1 {
+  margin: 0 0 12px;
+}
+
+.business-blocked-card p {
+  margin: 0 0 24px;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.business-blocked-card a,
+.business-blocked-card button {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+  text-decoration: none;
+}
