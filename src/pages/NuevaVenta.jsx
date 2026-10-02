@@ -85,7 +85,7 @@ function NuevaVenta() {
         cliente.nombre
           .toLowerCase()
           .includes(texto) ||
-        cliente.telefono.includes(texto)
+        (cliente.telefono || "").toLowerCase().includes(texto)
     );
   }, [clientes, busquedaCliente]);
 
