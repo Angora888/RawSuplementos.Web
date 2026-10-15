@@ -8,6 +8,7 @@ const ADMIN_WHATSAPP = "50660662375";
 function ProtectedRoute({ children }) {
   const token = localStorage.getItem("token");
   const [verificando, setVerificando] = useState(Boolean(token));
+  const [errorVerificacion, setErrorVerificacion] = useState(false);
   const [bloqueado, setBloqueado] = useState(() => {
     const negocio = getStoredBusiness();
     return negocio?.bloqueado ?? negocio?.Bloqueado ?? false;
@@ -17,6 +18,7 @@ function ProtectedRoute({ children }) {
     if (!token) return;
     let activo = true;
 
+    setErrorVerificacion(false);
     api.get("/Auth/sesion")
       .then(({ data }) => {
         if (!activo) return;
@@ -25,7 +27,16 @@ function ProtectedRoute({ children }) {
         localStorage.setItem("usuario", JSON.stringify({ ...usuario, negocio }));
         setBloqueado(Boolean(negocio.bloqueado ?? negocio.Bloqueado));
       })
-      .catch(() => {})
+      .catch((error) => {
+        if (!activo) return;
+        if (error?.response?.status === 401) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("usuario");
+          window.location.replace("/login");
+          return;
+        }
+        setErrorVerificacion(true);
+      })
       .finally(() => activo && setVerificando(false));
 
     return () => { activo = false; };
@@ -33,6 +44,19 @@ function ProtectedRoute({ children }) {
 
   if (!token) return <Navigate to="/login" replace />;
   if (verificando) return <div className="business-blocked-page"><div className="business-blocked-card"><p>Verificando acceso...</p></div></div>;
+
+  if (errorVerificacion) {
+    return (
+      <div className="business-blocked-page">
+        <div className="business-blocked-card">
+          <h1>No se pudo verificar el acceso</h1>
+          <p>Por seguridad, no podemos abrir la administración hasta confirmar el estado de tu sesión.</p>
+          <button type="button" className="btn-primary-app" onClick={() => window.location.reload()}>Reintentar</button>
+          <button type="button" className="btn-secondary-app" onClick={() => { localStorage.removeItem("token"); localStorage.removeItem("usuario"); window.location.replace("/login"); }}>Cerrar sesión</button>
+        </div>
+      </div>
+    );
+  }
 
   if (bloqueado) {
     const mensaje = encodeURIComponent("Hola, tengo un pago pendiente de Mi Emprendimiento y deseo habilitar nuevamente mi negocio.");
