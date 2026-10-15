@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+import { formatCRC, formatDateTime, getSaleStatusClass, getApiErrorMessage } from "../utils/formatters";
 
 function Ventas() {
   const navigate = useNavigate();
@@ -50,23 +51,13 @@ function Ventas() {
         }
       );
 
-      console.log(
-        "Respuesta Ventas:",
-        response.data
-      );
-
-      setVentas(
+setVentas(
         response.data?.ventas || []
       );
     } catch (error) {
       console.error(error);
 
-      setError(
-        typeof error.response?.data ===
-        "string"
-          ? error.response.data
-          : "No fue posible cargar las ventas."
-      );
+      setError(getApiErrorMessage(error, "No fue posible cargar las ventas."));
     } finally {
       setCargando(false);
     }
@@ -97,56 +88,6 @@ function Ventas() {
     setFiltros(nuevosFiltros);
 
     cargarVentas(nuevosFiltros);
-  };
-
-  const moneda = (valor) => {
-    return new Intl.NumberFormat(
-      "es-CR",
-      {
-        style: "currency",
-        currency: "CRC",
-        maximumFractionDigits: 0,
-      }
-    ).format(valor || 0);
-  };
-
-  const fecha = (valor) => {
-    if (!valor) {
-      return "-";
-    }
-
-    return new Date(
-      valor
-    ).toLocaleString(
-      "es-CR",
-      {
-        dateStyle: "short",
-        timeStyle: "short",
-      }
-    );
-  };
-
-  const obtenerClaseEstado = (
-    estado
-  ) => {
-    switch (
-      estado?.toLowerCase()
-    ) {
-      case "pagada":
-        return "paid";
-
-      case "parcial":
-        return "partial";
-
-      case "pendiente":
-        return "pending";
-
-      case "anulada":
-        return "cancelled";
-
-      default:
-        return "";
-    }
   };
 
   return (
@@ -379,9 +320,7 @@ function Ventas() {
                       </td>
 
                       <td>
-                        {fecha(
-                          venta.fecha
-                        )}
+                        {formatDateTime(venta.fecha)}
                       </td>
 
                       <td>
@@ -408,16 +347,12 @@ function Ventas() {
 
                       <td>
                         <strong>
-                          {moneda(
-                            venta.total
-                          )}
+                          {formatCRC(venta.total)}
                         </strong>
                       </td>
 
                       <td className="sales-paid">
-                        {moneda(
-                          venta.pagado
-                        )}
+                        {formatCRC(venta.pagado)}
                       </td>
 
                       <td>
@@ -429,17 +364,13 @@ function Ventas() {
                               : ""
                           }
                         >
-                          {moneda(
-                            venta.pendiente
-                          )}
+                          {formatCRC(venta.pendiente)}
                         </strong>
                       </td>
 
                       <td>
                         <span
-                          className={`sale-status ${obtenerClaseEstado(
-                            venta.estado
-                          )}`}
+                          className={`sale-status ${getSaleStatusClass(venta.estado)}`}
                         >
                           {venta.estado}
                         </span>
