@@ -2,19 +2,20 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { formatCRC } from "../utils/formatters";
+import { getStoredUser } from "../utils/session";
 import LandingSettings from "../components/LandingSettings";
 import "../styles/dashboard.css";
 import "../styles/landing-settings.css";
 
 function Dashboard(){
  const navigate=useNavigate(); const [datos,setDatos]=useState(null); const [cargando,setCargando]=useState(true); const [error,setError]=useState(""); const [copiado,setCopiado]=useState(false); const [personalizando,setPersonalizando]=useState(false);
- const usuario=JSON.parse(localStorage.getItem("usuario")||"{}"); const negocio=usuario?.negocio||{}; const slug=negocio?.slug||negocio?.Slug||""; const nombreNegocio=negocio?.nombre||negocio?.Nombre||"Mi negocio"; const urlCatalogo=slug?`${window.location.origin}/catalogo/${slug}`:"";
+ const usuario=getStoredUser(); const negocio=usuario?.negocio||{}; const slug=negocio?.slug||negocio?.Slug||""; const nombreNegocio=negocio?.nombre||negocio?.Nombre||"Mi negocio"; const urlCatalogo=slug?`${window.location.origin}/catalogo/${slug}`:"";
  useEffect(()=>{cargarDashboard()},[]);
  const cargarDashboard=async()=>{try{setCargando(true);const r=await api.get("/Dashboard");setDatos(r.data);setError("")}catch(e){console.error(e);setError("No fue posible cargar el dashboard.")}finally{setCargando(false)}};
  const copiarCatalogo=async()=>{if(!urlCatalogo)return;try{await navigator.clipboard.writeText(urlCatalogo);setCopiado(true);setTimeout(()=>setCopiado(false),2200)}catch{window.prompt("Copia el enlace de tu catálogo:",urlCatalogo)}};
  const compartirCatalogo=async()=>{if(!urlCatalogo)return;if(navigator.share){try{await navigator.share({title:`Catálogo de ${nombreNegocio}`,text:`Mira el catálogo de ${nombreNegocio}`,url:urlCatalogo});return}catch(e){if(e?.name==="AbortError")return}}await copiarCatalogo()};
  const abrirCatalogo=()=>urlCatalogo&&window.open(urlCatalogo,"_blank","noopener,noreferrer");
- const moneda=v=>new Intl.NumberFormat("es-CR",{style:"currency",currency:"CRC",maximumFractionDigits:0}).format(v||0); const plural=(c,s,p)=>c===1?s:p;
+ const moneda=formatCRC; const plural=(c,s,p)=>c===1?s:p;
  if(cargando)return <div className="page-container"><div className="dashboard-loading">Cargando dashboard...</div></div>; if(error)return <div className="page-container"><div className="dashboard-error">{error}</div></div>;
  const vH=datos?.ventas?.hoy||0,cVH=datos?.ventas?.cantidadHoy||0,vM=datos?.ventas?.mes||0,cVM=datos?.ventas?.cantidadMes||0,gH=datos?.ganancias?.hoy||0,gM=datos?.ganancias?.mes||0,pH=datos?.pagos?.hoy||0,cPH=datos?.pagos?.cantidadHoy||0,cobrar=datos?.cuentasPorCobrar?.total||0,cDeuda=datos?.cuentasPorCobrar?.clientesConDeuda||0,vPend=datos?.cuentasPorCobrar?.ventasPendientes||0,vVenc=datos?.cuentasPorCobrar?.ventasVencidas||0,vHoy=datos?.cuentasPorCobrar?.vencenHoy||0,stock=datos?.inventario?.stockBajo||0,sinStock=datos?.inventario?.sinStock||0,clientes=datos?.clientes?.total||0;
  const cards=[
