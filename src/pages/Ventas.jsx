@@ -20,9 +20,6 @@ function Ventas() {
     filtrosActuales = filtros
   ) => {
     try {
-      setCargando(true);
-      setError("");
-
       const params = {};
 
       if (filtrosActuales.estado) {
@@ -50,6 +47,7 @@ function Ventas() {
 setVentas(
         response.data?.ventas || []
       );
+      setError("");
     } catch (error) {
       console.error(error);
 
