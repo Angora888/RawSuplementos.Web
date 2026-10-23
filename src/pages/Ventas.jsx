@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { formatCRC, formatDateTime, getSaleStatusClass, getApiErrorMessage } from "../utils/formatters";
@@ -16,13 +16,9 @@ function Ventas() {
     fechaHasta: "",
   });
 
-  useEffect(() => {
-    cargarVentas();
-  }, []);
-
-  async function cargarVentas(
+  const cargarVentas = useCallback(async (
     filtrosActuales = filtros
-  ) {
+  ) => {
     try {
       setCargando(true);
       setError("");
@@ -61,7 +57,11 @@ setVentas(
     } finally {
       setCargando(false);
     }
-  };
+  }, [filtros]);
+
+  useEffect(() => {
+    cargarVentas();
+  }, [cargarVentas]);
 
   const handleFiltro = (e) => {
     const { name, value } = e.target;
