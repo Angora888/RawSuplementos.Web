@@ -27,7 +27,7 @@ function Inventario() {
     cargarProductos();
   }, []);
 
-  const cargarProductos = async () => {
+  async function cargarProductos() {
     try {
       setCargando(true);
 
@@ -47,7 +47,7 @@ function Inventario() {
     }
   };
 
-  const cargarHistorial = async (id) => {
+  async function cargarHistorial(id) {
     if (!id) {
       setProductoSeleccionado(null);
       setMovimientos([]);
