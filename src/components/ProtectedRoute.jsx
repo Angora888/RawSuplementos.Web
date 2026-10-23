@@ -15,10 +15,9 @@ function ProtectedRoute({ children }) {
   });
 
   useEffect(() => {
-    if (!token) return;
+    if (!token) return undefined;
     let activo = true;
 
-    setErrorVerificacion(false);
     api.get("/Auth/sesion")
       .then(({ data }) => {
         if (!activo) return;
@@ -26,6 +25,7 @@ function ProtectedRoute({ children }) {
         const usuario = getStoredUser();
         localStorage.setItem("usuario", JSON.stringify({ ...usuario, negocio }));
         setBloqueado(Boolean(negocio.bloqueado ?? negocio.Bloqueado));
+        setErrorVerificacion(false);
       })
       .catch((error) => {
         if (!activo) return;
@@ -39,7 +39,9 @@ function ProtectedRoute({ children }) {
       })
       .finally(() => activo && setVerificando(false));
 
-    return () => { activo = false; };
+    return () => {
+      activo = false;
+    };
   }, [token]);
 
   if (!token) return <Navigate to="/login" replace />;
