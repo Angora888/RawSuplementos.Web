@@ -30,9 +30,9 @@ function VentaDetalle() {
 
   const cargarVenta = useCallback(async () => {
     try {
-      setError("");
       const response = await api.get(`/Ventas/${id}`);
       setVenta(response.data);
+      setError("");
     } catch (err) {
       console.error(err);
       setError(getApiErrorMessage(err, "No fue posible cargar la venta."));
