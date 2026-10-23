@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { getApiErrorMessage } from "../utils/formatters";
@@ -31,11 +31,7 @@ function NuevaVenta() {
 
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    cargarDatos();
-  }, []);
-
-  async function cargarDatos() {
+  const cargarDatos = useCallback(async () => {
     try {
       setCargando(true);
 
@@ -69,8 +65,11 @@ function NuevaVenta() {
     } finally {
       setCargando(false);
     }
-  };
+  }, []);
 
+  useEffect(() => {
+    cargarDatos();
+  }, [cargarDatos]);
 
   const clientesFiltrados = useMemo(() => {
     if (!busquedaCliente.trim()) {
