@@ -12,14 +12,12 @@ function CuentaCliente() {
 
   const cargarCuenta = useCallback(async () => {
     try {
-      setCargando(true);
-      setError("");
-
       const response = await api.get(
         `/CuentasPorCobrar/cliente/${clienteId}`
       );
 
       setDatos(response.data);
+      setError("");
     } catch (error) {
       console.error(error);
 
