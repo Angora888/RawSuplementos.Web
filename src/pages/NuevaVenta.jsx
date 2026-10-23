@@ -35,7 +35,7 @@ function NuevaVenta() {
     cargarDatos();
   }, []);
 
-  const cargarDatos = async () => {
+  async function cargarDatos() {
     try {
       setCargando(true);
 
