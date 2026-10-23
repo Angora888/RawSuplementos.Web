@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../services/api";
 
@@ -10,11 +10,7 @@ function CuentaCliente() {
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    cargarCuenta();
-  }, [clienteId]);
-
-  async function cargarCuenta() {
+  const cargarCuenta = useCallback(async () => {
     try {
       setCargando(true);
       setError("");
@@ -35,7 +31,11 @@ function CuentaCliente() {
     } finally {
       setCargando(false);
     }
-  };
+  }, [clienteId]);
+
+  useEffect(() => {
+    cargarCuenta();
+  }, [cargarCuenta]);
 
   const moneda = (valor) => {
     return new Intl.NumberFormat("es-CR", {
