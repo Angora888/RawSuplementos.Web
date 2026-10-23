@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import "../styles/superadmin.css";
@@ -35,15 +35,13 @@ function SuperAdmin() {
     }
   }, []);
 
-  useEffect(() => {
-    if (!localStorage.getItem("token") || usuario?.rol !== "SuperAdmin") {
-      navigate("/login", { replace: true });
-      return;
-    }
-    cargarNegocios();
-  }, []);
+  const cerrarSesion = useCallback(() => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+    navigate("/login", { replace: true });
+  }, [navigate]);
 
-  async function cargarNegocios() {
+  const cargarNegocios = useCallback(async () => {
     try {
       setCargando(true);
       setError("");
@@ -58,7 +56,15 @@ function SuperAdmin() {
     } finally {
       setCargando(false);
     }
-  };
+  }, [cerrarSesion]);
+
+  useEffect(() => {
+    if (!localStorage.getItem("token") || usuario?.rol !== "SuperAdmin") {
+      navigate("/login", { replace: true });
+      return;
+    }
+    cargarNegocios();
+  }, [cargarNegocios, navigate, usuario?.rol]);
 
   const actualizarCampo = (e) => {
     const { name, value } = e.target;
@@ -121,12 +127,6 @@ function SuperAdmin() {
     } catch (e) {
       setError(e.response?.data || "No fue posible cambiar el bloqueo del negocio.");
     }
-  };
-
-  const cerrarSesion = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("usuario");
-    navigate("/login", { replace: true });
   };
 
   const totalActivos = negocios.filter((n) => n.activo).length;
