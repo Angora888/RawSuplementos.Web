@@ -43,7 +43,7 @@ function SuperAdmin() {
     cargarNegocios();
   }, []);
 
-  const cargarNegocios = async () => {
+  async function cargarNegocios() {
     try {
       setCargando(true);
       setError("");
