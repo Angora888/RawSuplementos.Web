@@ -15,9 +15,6 @@ function CuentasPorCobrar() {
 
   const cargarDatos = useCallback(async () => {
     try {
-      setCargando(true);
-      setError("");
-
       const [cuentasResponse, resumenResponse] =
         await Promise.all([
           api.get("/CuentasPorCobrar"),
@@ -31,6 +28,7 @@ function CuentasPorCobrar() {
       setResumen(
         resumenResponse.data || null
       );
+      setError("");
     } catch (error) {
       console.error(error);
 
