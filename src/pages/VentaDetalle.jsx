@@ -30,7 +30,6 @@ function VentaDetalle() {
 
   const cargarVenta = useCallback(async () => {
     try {
-      setCargando(true);
       setError("");
       const response = await api.get(`/Ventas/${id}`);
       setVenta(response.data);
