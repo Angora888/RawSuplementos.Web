@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 
@@ -13,11 +13,7 @@ function CuentasPorCobrar() {
 
   const [busqueda, setBusqueda] = useState("");
 
-  useEffect(() => {
-    cargarDatos();
-  }, []);
-
-  async function cargarDatos() {
+  const cargarDatos = useCallback(async () => {
     try {
       setCargando(true);
       setError("");
@@ -46,7 +42,11 @@ function CuentasPorCobrar() {
     } finally {
       setCargando(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    cargarDatos();
+  }, [cargarDatos]);
 
   const moneda = (valor) => {
     return new Intl.NumberFormat("es-CR", {
