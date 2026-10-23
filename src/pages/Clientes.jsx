@@ -22,7 +22,7 @@ function Clientes() {
     cargarClientes();
   }, []);
 
-  const cargarClientes = async () => {
+  async function cargarClientes() {
     try {
       setCargando(true);
 
