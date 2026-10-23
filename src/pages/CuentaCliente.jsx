@@ -14,7 +14,7 @@ function CuentaCliente() {
     cargarCuenta();
   }, [clienteId]);
 
-  const cargarCuenta = async () => {
+  async function cargarCuenta() {
     try {
       setCargando(true);
       setError("");
