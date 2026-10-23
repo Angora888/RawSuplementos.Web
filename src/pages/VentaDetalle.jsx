@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AbonoModal from "../components/ventas/AbonoModal";
 import AnularVentaModal from "../components/ventas/AnularVentaModal";
@@ -28,7 +28,7 @@ function VentaDetalle() {
   const [abono, setAbono] = useState(abonoInicial);
   const [motivoAnulacion, setMotivoAnulacion] = useState("");
 
-  const cargarVenta = async () => {
+  const cargarVenta = useCallback(async () => {
     try {
       setCargando(true);
       setError("");
@@ -40,11 +40,11 @@ function VentaDetalle() {
     } finally {
       setCargando(false);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     cargarVenta();
-  }, [id]);
+  }, [cargarVenta]);
 
   const handleAbono = (event) => {
     const { name, value } = event.target;
