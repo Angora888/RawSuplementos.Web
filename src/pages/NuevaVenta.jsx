@@ -33,8 +33,6 @@ function NuevaVenta() {
 
   const cargarDatos = useCallback(async () => {
     try {
-      setCargando(true);
-
       const [
         clientesResponse,
         productosResponse,
