@@ -58,6 +58,8 @@ setVentas(
   }, [filtros]);
 
   useEffect(() => {
+    // Intentional: load remote data when this screen mounts.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     cargarVentas();
   }, [cargarVentas]);
 
