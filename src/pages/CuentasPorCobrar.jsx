@@ -17,7 +17,7 @@ function CuentasPorCobrar() {
     cargarDatos();
   }, []);
 
-  const cargarDatos = async () => {
+  async function cargarDatos() {
     try {
       setCargando(true);
       setError("");
