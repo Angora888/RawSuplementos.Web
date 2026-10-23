@@ -42,6 +42,8 @@ function VentaDetalle() {
   }, [id]);
 
   useEffect(() => {
+    // Intentional: load remote data when this screen mounts.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     cargarVenta();
   }, [cargarVenta]);
 
