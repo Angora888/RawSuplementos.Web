@@ -20,9 +20,9 @@ function Ventas() {
     cargarVentas();
   }, []);
 
-  const cargarVentas = async (
+  async function cargarVentas(
     filtrosActuales = filtros
-  ) => {
+  ) {
     try {
       setCargando(true);
       setError("");
