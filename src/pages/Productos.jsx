@@ -19,7 +19,7 @@ function Productos() {
 
   useEffect(() => { cargarDatos(); }, []);
 
-  const cargarDatos = async () => {
+  async function cargarDatos() {
     try {
       setCargando(true);
       const [productosResponse, categoriasResponse] = await Promise.all([api.get("/Productos"), api.get("/Categorias")]);
