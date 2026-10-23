@@ -32,6 +32,8 @@ function CuentaCliente() {
   }, [clienteId]);
 
   useEffect(() => {
+    // Intentional: load remote data when this screen mounts.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     cargarCuenta();
   }, [cargarCuenta]);
 
