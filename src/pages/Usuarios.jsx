@@ -21,7 +21,7 @@ function Usuarios() {
     cargarUsuarios();
   }, []);
 
-  const cargarUsuarios = async () => {
+  async function cargarUsuarios() {
     try {
       setCargando(true);
       setError("");
