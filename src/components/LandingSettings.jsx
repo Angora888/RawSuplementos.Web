@@ -21,6 +21,18 @@ const defaults = {
   heroImagenUrl: "",
 };
 
+function Color({ name, label, form, onChange }) {
+  return (
+    <label>
+      {label}
+      <div className="landing-color-input">
+        <input type="color" name={name} value={form[name]} onChange={onChange} />
+        <span>{form[name]}</span>
+      </div>
+    </label>
+  );
+}
+
 function LandingSettings({ onClose, onSaved }) {
   const [form, setForm] = useState(defaults);
   const [cargando, setCargando] = useState(true);
@@ -29,9 +41,12 @@ function LandingSettings({ onClose, onSaved }) {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    let activo = true;
+
     api
       .get("/Configuracion/landing")
-      .then(({ data }) =>
+      .then(({ data }) => {
+        if (!activo) return;
         setForm({
           ...defaults,
           ...data,
@@ -42,10 +57,18 @@ function LandingSettings({ onClose, onSaved }) {
           colorFooter: data.colorFooter || defaults.colorFooter,
           colorBoton: data.colorBoton || data.colorPrimario || defaults.colorBoton,
           colorTexto: data.colorTexto || defaults.colorTexto,
-        })
-      )
-      .catch(() => setError("No fue posible cargar la configuración."))
-      .finally(() => setCargando(false));
+        });
+      })
+      .catch(() => {
+        if (activo) setError("No fue posible cargar la configuración.");
+      })
+      .finally(() => {
+        if (activo) setCargando(false);
+      });
+
+    return () => {
+      activo = false;
+    };
   }, []);
 
   const cambiar = (event) => {
@@ -78,16 +101,6 @@ function LandingSettings({ onClose, onSaved }) {
     }
   };
 
-  const Color = ({ name, label }) => (
-    <label>
-      {label}
-      <div className="landing-color-input">
-        <input type="color" name={name} value={form[name]} onChange={cambiar} />
-        <span>{form[name]}</span>
-      </div>
-    </label>
-  );
-
   return (
     <div
       className="landing-settings-backdrop"
@@ -112,41 +125,19 @@ function LandingSettings({ onClose, onSaved }) {
             <h3>Contenido</h3>
             <label>
               Título principal
-              <input
-                name="tituloLanding"
-                maxLength="180"
-                value={form.tituloLanding}
-                onChange={cambiar}
-              />
+              <input name="tituloLanding" maxLength="180" value={form.tituloLanding} onChange={cambiar} />
             </label>
             <label>
               Descripción
-              <textarea
-                name="descripcionLanding"
-                maxLength="500"
-                rows="3"
-                value={form.descripcionLanding}
-                onChange={cambiar}
-              />
+              <textarea name="descripcionLanding" maxLength="500" rows="3" value={form.descripcionLanding} onChange={cambiar} />
             </label>
             <label>
               Logo (URL)
-              <input
-                name="logoUrl"
-                maxLength="500"
-                value={form.logoUrl}
-                onChange={cambiar}
-                placeholder="https://..."
-              />
+              <input name="logoUrl" maxLength="500" value={form.logoUrl} onChange={cambiar} placeholder="https://..." />
             </label>
             <label>
               WhatsApp
-              <input
-                name="whatsApp"
-                maxLength="20"
-                value={form.whatsApp}
-                onChange={cambiar}
-              />
+              <input name="whatsApp" maxLength="20" value={form.whatsApp} onChange={cambiar} />
             </label>
 
             <h3>Hero principal</h3>
@@ -159,80 +150,45 @@ function LandingSettings({ onClose, onSaved }) {
             </label>
             <label>
               Etiqueta superior
-              <input
-                name="heroEtiqueta"
-                maxLength="120"
-                value={form.heroEtiqueta}
-                onChange={cambiar}
-                placeholder="Ej: SUPLEMENTOS DEPORTIVOS"
-              />
+              <input name="heroEtiqueta" maxLength="120" value={form.heroEtiqueta} onChange={cambiar} placeholder="Ej: SUPLEMENTOS DEPORTIVOS" />
             </label>
             <label>
               Texto resaltado del título
-              <input
-                name="heroTituloResaltado"
-                maxLength="180"
-                value={form.heroTituloResaltado}
-                onChange={cambiar}
-                placeholder="Ej: RESULTADOS RAW."
-              />
+              <input name="heroTituloResaltado" maxLength="180" value={form.heroTituloResaltado} onChange={cambiar} placeholder="Ej: RESULTADOS RAW." />
             </label>
             <label>
               Imagen principal del Hero (URL)
-              <input
-                name="heroImagenUrl"
-                maxLength="500"
-                value={form.heroImagenUrl}
-                onChange={cambiar}
-                placeholder="https://..."
-              />
+              <input name="heroImagenUrl" maxLength="500" value={form.heroImagenUrl} onChange={cambiar} placeholder="https://..." />
             </label>
 
             <h3>Apariencia</h3>
             <div className="landing-color-grid">
-              <Color name="colorPrimario" label="Color principal" />
-              <Color name="colorSecundario" label="Color secundario" />
-              <Color name="colorFondo" label="Fondo de página" />
-              <Color name="colorHeader" label="Header" />
-              <Color name="colorFooter" label="Footer" />
-              <Color name="colorBoton" label="Botones" />
-              <Color name="colorTexto" label="Texto principal" />
+              <Color name="colorPrimario" label="Color principal" form={form} onChange={cambiar} />
+              <Color name="colorSecundario" label="Color secundario" form={form} onChange={cambiar} />
+              <Color name="colorFondo" label="Fondo de página" form={form} onChange={cambiar} />
+              <Color name="colorHeader" label="Header" form={form} onChange={cambiar} />
+              <Color name="colorFooter" label="Footer" form={form} onChange={cambiar} />
+              <Color name="colorBoton" label="Botones" form={form} onChange={cambiar} />
+              <Color name="colorTexto" label="Texto principal" form={form} onChange={cambiar} />
             </div>
 
             <label>
               Imagen de fondo del Hero (URL)
-              <input
-                name="heroFondoUrl"
-                maxLength="500"
-                value={form.heroFondoUrl}
-                onChange={cambiar}
-                placeholder="https://..."
-              />
+              <input name="heroFondoUrl" maxLength="500" value={form.heroFondoUrl} onChange={cambiar} placeholder="https://..." />
             </label>
             <label>
               Texto del footer
-              <input
-                name="textoFooter"
-                maxLength="250"
-                value={form.textoFooter}
-                onChange={cambiar}
-                placeholder="Gracias por apoyar nuestro negocio ❤️"
-              />
+              <input name="textoFooter" maxLength="250" value={form.textoFooter} onChange={cambiar} placeholder="Gracias por apoyar nuestro negocio ❤️" />
             </label>
 
-            <div
-              className="landing-live-preview"
-              style={{ background: form.colorFondo, color: form.colorTexto }}
-            >
+            <div className="landing-live-preview" style={{ background: form.colorFondo, color: form.colorTexto }}>
               <div style={{ background: form.colorHeader }}>
                 <strong>{form.tituloLanding || "Tu negocio"}</strong>
               </div>
               <section
                 style={
                   form.heroFondoUrl
-                    ? {
-                        backgroundImage: `linear-gradient(rgba(255,255,255,.78),rgba(255,255,255,.78)),url("${form.heroFondoUrl}")`,
-                      }
+                    ? { backgroundImage: `linear-gradient(rgba(255,255,255,.78),rgba(255,255,255,.78)),url("${form.heroFondoUrl}")` }
                     : {}
                 }
               >
@@ -247,9 +203,7 @@ function LandingSettings({ onClose, onSaved }) {
             {mensaje && <div className="landing-settings-success">{mensaje}</div>}
 
             <div className="landing-settings-actions">
-              <button type="button" onClick={onClose}>
-                Cancelar
-              </button>
+              <button type="button" onClick={onClose}>Cancelar</button>
               <button type="submit" disabled={guardando}>
                 {guardando ? "Guardando..." : "Guardar cambios"}
               </button>
