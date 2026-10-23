@@ -63,6 +63,8 @@ function SuperAdmin() {
       navigate("/login", { replace: true });
       return;
     }
+    // Intentional: load remote data when this screen mounts.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     cargarNegocios();
   }, [cargarNegocios, navigate, usuario?.rol]);
 
