@@ -11,7 +11,7 @@ function Dashboard(){
  const navigate=useNavigate(); const [datos,setDatos]=useState(null); const [cargando,setCargando]=useState(true); const [error,setError]=useState(""); const [copiado,setCopiado]=useState(false); const [personalizando,setPersonalizando]=useState(false);
  const usuario=getStoredUser(); const negocio=usuario?.negocio||{}; const slug=negocio?.slug||negocio?.Slug||""; const nombreNegocio=negocio?.nombre||negocio?.Nombre||"Mi negocio"; const urlCatalogo=slug?`${window.location.origin}/catalogo/${slug}`:"";
  useEffect(()=>{cargarDashboard()},[]);
- const cargarDashboard=async()=>{try{setCargando(true);const r=await api.get("/Dashboard");setDatos(r.data);setError("")}catch(e){console.error(e);setError("No fue posible cargar el dashboard.")}finally{setCargando(false)}};
+ async function cargarDashboard(){try{setCargando(true);const r=await api.get("/Dashboard");setDatos(r.data);setError("")}catch(e){console.error(e);setError("No fue posible cargar el dashboard.")}finally{setCargando(false)}}
  const copiarCatalogo=async()=>{if(!urlCatalogo)return;try{await navigator.clipboard.writeText(urlCatalogo);setCopiado(true);setTimeout(()=>setCopiado(false),2200)}catch{window.prompt("Copia el enlace de tu catálogo:",urlCatalogo)}};
  const compartirCatalogo=async()=>{if(!urlCatalogo)return;if(navigator.share){try{await navigator.share({title:`Catálogo de ${nombreNegocio}`,text:`Mira el catálogo de ${nombreNegocio}`,url:urlCatalogo});return}catch(e){if(e?.name==="AbortError")return}}await copiarCatalogo()};
  const abrirCatalogo=()=>urlCatalogo&&window.open(urlCatalogo,"_blank","noopener,noreferrer");
