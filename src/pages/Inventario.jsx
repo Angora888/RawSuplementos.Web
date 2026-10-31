@@ -28,6 +28,7 @@ function Inventario() {
 
   useEffect(() => {
     cargarProductos();
+    return () => { historialRequestRef.current += 1; };
   }, []);
 
   async function cargarProductos() {
@@ -96,6 +97,8 @@ function Inventario() {
     setMensaje("");
     setError("");
 
+    setProductoSeleccionado(null);
+    setMovimientos([]);
     await cargarHistorial(id);
   };
 
@@ -122,10 +125,7 @@ function Inventario() {
     const cantidadIngresada =
       Number(form.cantidad);
 
-    if (
-      !cantidadIngresada ||
-      cantidadIngresada === 0
-    ) {
+    if (!Number.isFinite(cantidadIngresada) || cantidadIngresada === 0) {
       setError(
         "Debe ingresar una cantidad válida."
       );
