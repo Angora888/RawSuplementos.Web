@@ -1,7 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import api from "../services/api";
 
 function Inventario() {
+  const historialRequestRef = useRef(0);
+  const guardandoRef = useRef(false);
+  const [guardando, setGuardando] = useState(false);
   const [productos, setProductos] = useState([]);
   const [productoId, setProductoId] = useState("");
 
@@ -48,7 +51,9 @@ function Inventario() {
   };
 
   async function cargarHistorial(id) {
+    const requestId = ++historialRequestRef.current;
     if (!id) {
+      setCargandoHistorial(false);
       setProductoSeleccionado(null);
       setMovimientos([]);
       return;
@@ -61,6 +66,8 @@ function Inventario() {
         `/Inventario/producto/${id}`
       );
 
+      if (requestId !== historialRequestRef.current) return;
+
       setProductoSeleccionado(
         response.data.producto
       );
@@ -71,13 +78,14 @@ function Inventario() {
 
       setError("");
     } catch (error) {
+      if (requestId !== historialRequestRef.current) return;
       console.error(error);
 
       setError(
         "No fue posible cargar el historial."
       );
     } finally {
-      setCargandoHistorial(false);
+      if (requestId === historialRequestRef.current) setCargandoHistorial(false);
     }
   };
 
@@ -102,6 +110,7 @@ function Inventario() {
 
   const registrarMovimiento = async (e) => {
     e.preventDefault();
+    if (guardandoRef.current) return;
 
     if (!productoId) {
       setError(
@@ -145,6 +154,8 @@ function Inventario() {
         Math.abs(cantidadFinal);
     }
 
+    guardandoRef.current = true;
+    setGuardando(true);
     try {
       setError("");
       setMensaje("");
@@ -182,6 +193,9 @@ function Inventario() {
           ? error.response.data
           : "No fue posible actualizar el inventario."
       );
+    } finally {
+      guardandoRef.current = false;
+      setGuardando(false);
     }
   };
 
@@ -378,9 +392,10 @@ function Inventario() {
 
               <button
                 type="submit"
+                disabled={guardando}
                 className="btn-primary-app inventory-submit"
               >
-                Registrar movimiento
+                {guardando ? "Registrando..." : "Registrar movimiento"}
               </button>
 
             </form>
