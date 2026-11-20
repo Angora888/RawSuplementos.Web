@@ -180,7 +180,9 @@ function Inventario() {
         "Inventario actualizado correctamente."
       );
 
-      await Promise.all([
+      // El movimiento ya se guardó. Un fallo al refrescar no debe
+      // presentarse como un fallo del registro ni invitar a repetirlo.
+      await Promise.allSettled([
         cargarHistorial(productoId),
         cargarProductos(),
       ]);
