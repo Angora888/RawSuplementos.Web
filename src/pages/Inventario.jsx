@@ -18,6 +18,8 @@ function Inventario() {
     useState(false);
 
   const [error, setError] = useState("");
+  const [errorProductos, setErrorProductos] = useState("");
+  const [errorHistorial, setErrorHistorial] = useState("");
   const [mensaje, setMensaje] = useState("");
 
   const [form, setForm] = useState({
@@ -34,16 +36,17 @@ function Inventario() {
   async function cargarProductos() {
     try {
       setCargando(true);
+      setErrorProductos("");
 
       const response =
         await api.get("/Productos");
 
       setProductos(response.data);
-      setError("");
+      setErrorProductos("");
     } catch (error) {
       console.error(error);
 
-      setError(
+      setErrorProductos(
         "No fue posible cargar los productos."
       );
     } finally {
@@ -53,6 +56,7 @@ function Inventario() {
 
   async function cargarHistorial(id) {
     const requestId = ++historialRequestRef.current;
+    setErrorHistorial("");
     if (!id) {
       setCargandoHistorial(false);
       setProductoSeleccionado(null);
@@ -77,12 +81,12 @@ function Inventario() {
         response.data.movimientos
       );
 
-      setError("");
+      setErrorHistorial("");
     } catch (error) {
       if (requestId !== historialRequestRef.current) return;
       console.error(error);
 
-      setError(
+      setErrorHistorial(
         "No fue posible cargar el historial."
       );
     } finally {
@@ -234,6 +238,13 @@ function Inventario() {
         </div>
       )}
 
+      {errorProductos && (
+        <div className="dashboard-error" role="alert">{errorProductos}</div>
+      )}
+      {errorHistorial && (
+        <div className="dashboard-error" role="alert">{errorHistorial}</div>
+      )}
+
       {mensaje && (
         <div className="success-message">
           {mensaje}
@@ -269,6 +280,7 @@ function Inventario() {
 
                 <select
                   value={productoId}
+                  disabled={guardando}
                   onChange={
                     seleccionarProducto
                   }
